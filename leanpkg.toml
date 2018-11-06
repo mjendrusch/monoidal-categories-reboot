@@ -1,0 +1,9 @@
+[package]
+name = "monoidal-categories-reboot"
+version = "0.1"
+lean_version = "nightly-2018-10-28"
+path = "src"
+
+[dependencies]
+mathlib = {git = "https://github.com/leanprover/mathlib", rev = "aed8194c97aefffcdad80a4016c421ed433bc5b0"}
+lean-category-theory = {git = "https://github.com/semorrison/lean-category-theory", rev = "8a5a26dc42608d09cba56f1875e184bb2085eef6"}
