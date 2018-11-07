@@ -81,8 +81,8 @@ infixr ` ⊗ `:80 := tensor_obj
 infixr ` ⊗ `:80 := tensor_hom
 
 @[reducible] def monoidal_category.tensor : (C × C) ⥤ C :=
-{ obj       := λ X, tensor_obj X.1 X.2,
-  map'      := λ {X Y : C × C} (f : X ⟶ Y), tensor_hom f.1 f.2,
+{ obj       := λ X, X.1 ⊗ X.2,
+  map'      := λ {X Y : C × C} (f : X ⟶ Y), f.1 ⊗ f.2,
   map_id'   := λ {X : C × C}, tensor_map_id C X.fst X.snd,
   map_comp' := λ {X Y Z : C × C} (f : category.hom X Y) (g : category.hom Y Z),
     tensor_map_comp C f.1 f.2 g.1 g.2 }

@@ -30,10 +30,10 @@ extends category_theory.functor C D :=
 -- unit morphism
 (ε               : tensor_unit D ⟶ obj (tensor_unit C))
 -- natural transformation
-(μ_hom           : Π X Y : C, tensor_obj (obj X) (obj Y) ⟶ obj (tensor_obj X Y))
+(μ_hom           : Π X Y : C, (obj X) ⊗ (obj Y) ⟶ obj (X ⊗ Y))
 (μ_natural       : ∀ (X Y X' Y' : C)
   (f : X ⟶ Y) (g : X' ⟶ Y'),
-  (μ_hom X X') ≫ map' (tensor_hom f g) = (tensor_hom (map' f) (map' g)) ≫ (μ_hom Y Y')
+  (μ_hom X X') ≫ map' (f ⊗ g) = ((map' f) ⊗ (map' g)) ≫ (μ_hom Y Y')
   . obviously)
 -- associativity
 (associativity   : ∀ (X Y Z : C),
