@@ -55,7 +55,7 @@ attribute [simp,ematch] monoidal_functor.left_unitality
 restate_axiom monoidal_functor.right_unitality'
 attribute [simp,ematch] monoidal_functor.right_unitality
 restate_axiom monoidal_functor.associativity'
-attribute [ematch] monoidal_functor.associativity
+attribute [simp,ematch] monoidal_functor.associativity
 
 end
 
@@ -80,7 +80,11 @@ include 𝒞 𝒟 ℰ
 def monoidal_functor.comp
   (F : monoidal_functor C D) (G : monoidal_functor D E) : monoidal_functor C E :=
 { ε                := G.ε ≫ (G.map F.ε),
-  μ                := λ X Y, G.μ (F.obj X) (F.obj Y) ≫ G.map (F.μ X Y),
+  μ                := λ X Y,
+    { hom          := (G.μ (F.obj X) (F.obj Y)).hom ≫ G.map (F.μ X Y).hom,
+      inv          := G.map (F.μ X Y).inv ≫ (G.μ (F.obj X) (F.obj Y)).inv,
+      hom_inv_id'  := sorry,
+      inv_hom_id'  := sorry },
   μ_natural        := sorry,
   associativity'   := sorry,
   left_unitality'  := sorry,
