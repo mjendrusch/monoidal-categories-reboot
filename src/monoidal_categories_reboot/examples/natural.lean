@@ -1,4 +1,5 @@
 -- Copyright (c) 2018 Michael Jendrusch. All rights reserved.
+import data.equiv.basic
 import category_theory.category
 import category_theory.functor
 import category_theory.products
@@ -30,6 +31,9 @@ def types_associator_inv (α β γ : Type u) : α × (β × γ) → (α × β) �
 inductive nat_hom (m n : ℕ) : Type 
 | mk : nat_hom
 
+@[simp] lemma equality {m n : ℕ} (f : nat_hom m n) : f = nat_hom.mk m n :=
+by cases f; refl
+
 @[simp] def nat_id (X : ℕ) : nat_hom X X :=
 nat_hom.mk X X
 @[simp] def nat_comp (X Y Z : ℕ) (f : nat_hom X Y) (g : nat_hom Y Z) : nat_hom X Z :=
@@ -38,10 +42,12 @@ nat_hom.mk X Z
 @[simp] def nat_tensor_hom (A B C D : ℕ) (f : nat_hom A B) (g : nat_hom C D) :
   nat_hom (A + C) (B + D) := nat_hom.mk (A + C) (B + D)
 
-instance types : monoidal_category (nat) := {
-  hom  := λ X Y, nat_hom X Y,
+instance types : monoidal_category (nat) :=
+{ hom  := λ X Y, nat_hom X Y,
   id   := nat_id,
   comp := nat_comp,
+  id_comp' := by tidy; rw equality f,
+  comp_id' := by tidy; rw equality f,
   tensor_obj := nat_tensor_obj,
   tensor_hom := nat_tensor_hom,
   tensor_unit := nat.zero,
@@ -55,8 +61,7 @@ instance types : monoidal_category (nat) := {
     { hom := nat_hom.mk (nat_tensor_obj (nat_tensor_obj X Y) Z)
                         (nat_tensor_obj X (nat_tensor_obj Y Z)),
       inv := nat_hom.mk (nat_tensor_obj X (nat_tensor_obj Y Z))
-                        (nat_tensor_obj (nat_tensor_obj X Y) Z)}
-}
+                        (nat_tensor_obj (nat_tensor_obj X Y) Z)} }
 
 end
 
