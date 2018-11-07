@@ -59,6 +59,16 @@ attribute [ematch] monoidal_functor.associativity
 
 end
 
+namespace monoidal_functor
+variables {C : Type u₁} [𝒞 : monoidal_category.{u₁ v₁} C]
+variables {D : Type u₂} [𝒟 : monoidal_category.{u₂ v₂} D]
+include 𝒞 𝒟
+
+@[reducible] def map (F : monoidal_functor C D) {X Y : C} (f : X ⟶ Y) : F.obj X ⟶ F.obj Y :=
+F.to_functor.map f
+
+end monoidal_functor
+
 section
 
 variables (C : Type u₁) [𝒞 : monoidal_category.{u₁ v₁} C]
@@ -69,16 +79,13 @@ include 𝒞 𝒟 ℰ
 
 def monoidal_functor.comp
   (F : monoidal_functor C D) (G : monoidal_functor D E) : monoidal_functor C E :=
-{ obj              := λ X, G.obj (F.obj X),
-  map'             := λ {X Y : C} (f : X ⟶ Y), G.map' (F.map' f),
-  map_id'          := sorry,
-  map_comp'        := sorry,
-  ε                := sorry,
-  μ_hom            := sorry,
+{ ε                := G.ε ≫ (G.map F.ε),
+  μ_hom            := λ X Y, G.μ_hom (F.obj X) (F.obj Y) ≫ G.map (F.μ_hom X Y),
   μ_natural        := sorry,
   associativity'   := sorry,
   left_unitality'  := sorry,
-  right_unitality' := sorry }
+  right_unitality' := sorry,
+  .. (F.to_functor) ⋙ (G.to_functor) }
 
 end
 
