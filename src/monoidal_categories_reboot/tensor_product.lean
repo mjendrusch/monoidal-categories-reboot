@@ -28,7 +28,7 @@ local attribute [tidy] tactic.assumption
 
 def assoc_obj
   {C : Type u} [category.{u v} C] (tensor_obj : tensor_obj_type C) : Type (max u v) :=
-Π X Y Z : C, (tensor_obj (tensor_obj X Y) Z) ⟶ (tensor_obj X (tensor_obj Y Z))
+Π X Y Z : C, (tensor_obj (tensor_obj X Y) Z) ≅ (tensor_obj X (tensor_obj Y Z))
 
 def assoc_natural
   {C : Type u} [category.{u v} C]
@@ -36,13 +36,13 @@ def assoc_natural
   (tensor_hom : tensor_hom_type tensor_obj)
   (assoc : assoc_obj tensor_obj) : Prop :=
 ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
-  (tensor_hom (tensor_hom f₁ f₂) f₃) ≫ (assoc Y₁ Y₂ Y₃) = (assoc X₁ X₂ X₃) ≫ (tensor_hom f₁ (tensor_hom f₂ f₃))
+  (tensor_hom (tensor_hom f₁ f₂) f₃) ≫ (assoc Y₁ Y₂ Y₃).hom = (assoc X₁ X₂ X₃).hom ≫ (tensor_hom f₁ (tensor_hom f₂ f₃))
 
 def left_unitor_obj
   {C : Type u} [category.{u v} C]
   (tensor_obj : tensor_obj_type C)
   (tensor_unit : C) : Type (max u v) :=
-Π X : C, (tensor_obj tensor_unit X) ⟶ X
+Π X : C, (tensor_obj tensor_unit X) ≅ X
 
 def left_unitor_natural
   {C : Type u} [category.{u v} C]
@@ -51,13 +51,13 @@ def left_unitor_natural
   (tensor_unit : C)
   (left_unitor : left_unitor_obj tensor_obj tensor_unit) : Prop :=
 ∀ {X Y : C} (f : X ⟶ Y),
-  (tensor_hom (𝟙 tensor_unit) f) ≫ (left_unitor Y) = (left_unitor X) ≫ f
+  (tensor_hom (𝟙 tensor_unit) f) ≫ (left_unitor Y).hom = (left_unitor X).hom ≫ f
 
 def right_unitor_obj
   {C : Type u} [category.{u v} C]
   (tensor_obj : tensor_obj_type C)
   (tensor_unit : C) : Type (max u v) :=
-Π (X : C), (tensor_obj X tensor_unit) ⟶ X
+Π (X : C), (tensor_obj X tensor_unit) ≅ X
 
 def right_unitor_natural
   {C : Type u} [category.{u v} C]
@@ -66,7 +66,7 @@ def right_unitor_natural
   (tensor_unit : C)
   (right_unitor : right_unitor_obj tensor_obj tensor_unit) : Prop :=
 ∀ {X Y : C} (f : X ⟶ Y),
-  (tensor_hom f (𝟙 tensor_unit)) ≫ (right_unitor Y) = (right_unitor X) ≫ f
+  (tensor_hom f (𝟙 tensor_unit)) ≫ (right_unitor Y).hom = (right_unitor X).hom ≫ f
 
 @[reducible] def pentagon
   {C : Type u} [category.{u v} C]
@@ -74,8 +74,8 @@ def right_unitor_natural
   (tensor_hom : tensor_hom_type tensor_obj)
   (assoc : assoc_obj tensor_obj) : Prop :=
 ∀ W X Y Z : C,
-  (tensor_hom (assoc W X Y) (𝟙 Z)) ≫ (assoc W (tensor_obj X Y) Z) ≫ (tensor_hom (𝟙 W) (assoc X Y Z))
-  = (assoc (tensor_obj W X) Y Z) ≫ (assoc W X (tensor_obj Y Z))
+  (tensor_hom (assoc W X Y).hom (𝟙 Z)) ≫ (assoc W (tensor_obj X Y) Z).hom ≫ (tensor_hom (𝟙 W) (assoc X Y Z).hom)
+  = (assoc (tensor_obj W X) Y Z).hom ≫ (assoc W X (tensor_obj Y Z)).hom
 
 @[reducible] def triangle
   {C : Type u} [category.{u v} C]
@@ -85,7 +85,7 @@ def right_unitor_natural
   (right_unitor : right_unitor_obj tensor_obj tensor_unit)
   (assoc : assoc_obj tensor_obj) : Prop :=
 ∀ X Y : C,
-  (assoc X tensor_unit Y) ≫ (tensor_hom (𝟙 X) (left_unitor Y))
+  (assoc X tensor_unit Y).hom ≫ (tensor_hom (𝟙 X) (left_unitor Y).hom)
   = tensor_hom (right_unitor X) (𝟙 Y)
 
 end category_theory.monoidal
