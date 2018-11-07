@@ -54,16 +54,16 @@ class monoidal_category (C : Type u) extends category.{u v} C :=
 -- triangle identity:
 (triangle                : triangle @tensor_hom left_unitor_hom right_unitor_hom associator_hom . obviously)
 
-attribute [ematch] monoidal_category.tensor_map_id
-attribute [ematch] monoidal_category.tensor_map_comp
-attribute [ematch] monoidal_category.associator_hom_inv_id
-attribute [ematch] monoidal_category.associator_inv_hom_id
+attribute [simp,ematch] monoidal_category.tensor_map_id
+attribute [simp,ematch] monoidal_category.tensor_map_comp
+attribute [simp,ematch] monoidal_category.associator_hom_inv_id
+attribute [simp,ematch] monoidal_category.associator_inv_hom_id
 attribute [ematch] monoidal_category.associator_naturality
-attribute [ematch] monoidal_category.left_unitor_hom_inv_id
-attribute [ematch] monoidal_category.left_unitor_inv_hom_id
+attribute [simp,ematch] monoidal_category.left_unitor_hom_inv_id
+attribute [simp,ematch] monoidal_category.left_unitor_inv_hom_id
 attribute [ematch] monoidal_category.left_unitor_naturality
-attribute [ematch] monoidal_category.right_unitor_hom_inv_id
-attribute [ematch] monoidal_category.right_unitor_inv_hom_id
+attribute [simp,ematch] monoidal_category.right_unitor_hom_inv_id
+attribute [simp,ematch] monoidal_category.right_unitor_inv_hom_id
 attribute [ematch] monoidal_category.right_unitor_naturality
 restate_axiom monoidal_category.pentagon
 attribute [ematch] monoidal_category.pentagon
@@ -82,28 +82,19 @@ infixr ` ⊗ `:80 := tensor_hom
 
 @[reducible] def monoidal_category.tensor : (C × C) ⥤ C :=
 { obj       := λ X, X.1 ⊗ X.2,
-  map'      := λ {X Y : C × C} (f : X ⟶ Y), f.1 ⊗ f.2,
-  map_id'   := λ {X : C × C}, tensor_map_id C X.fst X.snd,
-  map_comp' := λ {X Y Z : C × C} (f : category.hom X Y) (g : category.hom Y Z),
-    tensor_map_comp C f.1 f.2 g.1 g.2 }
+  map'      := λ {X Y : C × C} (f : X ⟶ Y), f.1 ⊗ f.2 }
 
 @[reducible] def monoidal_category.associator_transformation (X Y Z : C) : ((X ⊗ Y) ⊗ Z) ≅ (X ⊗ (Y ⊗ Z)) :=
 { hom := associator_hom X Y Z,
-  inv := associator_inv X Y Z,
-  hom_inv_id' := associator_hom_inv_id C X Y Z,
-  inv_hom_id' := associator_inv_hom_id C X Y Z }
+  inv := associator_inv X Y Z }
 
 @[reducible] def monoidal_category.left_unitor_transformation (X : C) : (tensor_unit C ⊗ X) ≅ X :=
 { hom := left_unitor_hom X,
-  inv := left_unitor_inv X,
-  hom_inv_id' := left_unitor_hom_inv_id C X,
-  inv_hom_id' := left_unitor_inv_hom_id C X }
+  inv := left_unitor_inv X }
 
 @[reducible] def monoidal_category.right_unitor_transformation (X : C) : (X ⊗ tensor_unit C) ≅ X :=
 { hom := right_unitor_hom X,
-  inv := right_unitor_inv X,
-  hom_inv_id' := right_unitor_hom_inv_id C X,
-  inv_hom_id' := right_unitor_inv_hom_id C X }
+  inv := right_unitor_inv X }
 
 @[reducible] def left_unitor (X : C) : ((tensor_unit C) ⊗ X) ⟶ X :=
 left_unitor_hom X
