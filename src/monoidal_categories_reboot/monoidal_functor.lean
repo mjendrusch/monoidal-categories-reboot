@@ -37,17 +37,17 @@ extends category_theory.functor C D :=
   . obviously)
 -- associativity
 (associativity'   : ∀ (X Y Z : C),
-    (μ_hom X Y ⊗ 𝟙 (obj Z)) ≫ μ_hom (X ⊗ Y) Z ≫ map' (associator X Y Z)
-  = associator (obj X) (obj Y) (obj Z) ≫ (𝟙 (obj X) ⊗ μ_hom Y Z) ≫ μ_hom X (Y ⊗ Z)
+    (μ_hom X Y ⊗ 𝟙 (obj Z)) ≫ μ_hom (X ⊗ Y) Z ≫ map' (associator X Y Z).hom
+  = (associator (obj X) (obj Y) (obj Z)).hom ≫ (𝟙 (obj X) ⊗ μ_hom Y Z) ≫ μ_hom X (Y ⊗ Z)
   . obviously)
 -- unitality
 (left_unitality'  : ∀ X : C,
-    left_unitor (obj X)
-  = (ε ⊗ 𝟙 (obj X)) ≫ μ_hom (tensor_unit C) X ≫ map' (left_unitor X)
+    (left_unitor (obj X)).hom
+  = (ε ⊗ 𝟙 (obj X)) ≫ μ_hom (tensor_unit C) X ≫ map' (left_unitor X).hom
   . obviously)
 (right_unitality' : ∀ X : C,
-    right_unitor (obj X)
-  = (𝟙 (obj X) ⊗ ε) ≫ μ_hom X (tensor_unit C) ≫ map' (right_unitor X)
+    (right_unitor (obj X)).hom
+  = (𝟙 (obj X) ⊗ ε) ≫ μ_hom X (tensor_unit C) ≫ map' (right_unitor X).hom
   . obviously)
 
 restate_axiom monoidal_functor.left_unitality'
