@@ -86,6 +86,6 @@ def right_unitor_natural
   (assoc : assoc_obj tensor_obj) : Prop :=
 ∀ X Y : C,
   (assoc X tensor_unit Y).hom ≫ (tensor_hom (𝟙 X) (left_unitor Y).hom)
-  = tensor_hom (right_unitor X) (𝟙 Y)
+  = tensor_hom (right_unitor X).hom (𝟙 Y)
 
 end category_theory.monoidal

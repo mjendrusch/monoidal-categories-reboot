@@ -71,8 +71,6 @@ infixr ` ⊗ `:80 := tensor_hom
 { obj       := λ X, X.1 ⊗ X.2,
   map'      := λ {X Y : C × C} (f : X ⟶ Y), f.1 ⊗ f.2 }
 
--- TODO express the associator and unitors as natural isomorphisms
-
 variables {U V W X Y Z : C}
 
 @[ematch] definition interchange (f : U ⟶ V) (g : V ⟶ W) (h : X ⟶ Y) (k : Y ⟶ Z)
@@ -100,6 +98,43 @@ begin
   rw ←interchange,
   simp
 end
+
+open monoidal_category
+
+@[reducible] def monoidal_category.left_assoc_functor : (C × C × C) ⥤ C :=
+{ obj  := λ X, (X.1 ⊗ X.2.1) ⊗ X.2.2,
+  map' := λ {X Y : C × C × C} (f : X ⟶ Y),
+    (f.1 ⊗ f.2.1) ⊗ f.2.2 }
+@[reducible] def monoidal_category.right_assoc_functor : (C × C × C) ⥤ C :=
+{ obj  := λ X, X.1 ⊗ (X.2.1 ⊗ X.2.2),
+  map' := λ {X Y : C × C × C} (f : X ⟶ Y),
+    f.1 ⊗ (f.2.1 ⊗ f.2.2) }
+@[reducible] def monoidal_category.left_unitor_functor : C ⥤ C :=
+{ obj  := λ X, tensor_unit C ⊗ X,
+  map' := λ {X Y : C} (f : X ⟶ Y), (𝟙 (tensor_unit C)) ⊗ f }
+@[reducible] def monoidal_category.right_unitor_functor : C ⥤ C :=
+{ obj  := λ X, X ⊗ tensor_unit C,
+  map' := λ {X Y : C} (f : X ⟶ Y), f ⊗ (𝟙 (tensor_unit C)) }
+
+open monoidal_category
+
+-- natural isomorphisms for the associator and unitors.
+
+@[reducible] def monoidal_category.associator_nat_iso :
+  left_assoc_functor C ≅ right_assoc_functor C :=
+nat_iso.of_components
+  (by intros; dsimp; apply associator)
+  (by intros; dsimp; apply associator_naturality)
+@[reducible] def monoidal_category.left_unitor_nat_iso :
+  left_unitor_functor C ≅ functor.id C :=
+nat_iso.of_components
+  (by intros; dsimp; apply left_unitor)
+  (by intros; dsimp; apply left_unitor_naturality)
+@[reducible] def monoidal_category.right_unitor_nat_iso :
+  right_unitor_functor C ≅ functor.id C :=
+nat_iso.of_components
+  (by intros; dsimp; apply right_unitor)
+  (by intros; dsimp; apply right_unitor_naturality)
 
 end
 
