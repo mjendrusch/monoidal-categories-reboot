@@ -30,24 +30,24 @@ extends category_theory.functor C D :=
 -- unit morphism
 (ε               : tensor_unit D ⟶ obj (tensor_unit C))
 -- natural transformation
-(μ_hom            : Π X Y : C, (obj X) ⊗ (obj Y) ⟶ obj (X ⊗ Y))
+(μ                : Π X Y : C, (obj X) ⊗ (obj Y) ≅ obj (X ⊗ Y))
 (μ_natural        : ∀ (X Y X' Y' : C)
   (f : X ⟶ Y) (g : X' ⟶ Y'),
-  (μ_hom X X') ≫ map' (f ⊗ g) = ((map' f) ⊗ (map' g)) ≫ (μ_hom Y Y')
+  (μ X X').hom ≫ map' (f ⊗ g) = ((map' f) ⊗ (map' g)) ≫ (μ Y Y').hom
   . obviously)
 -- associativity
 (associativity'   : ∀ (X Y Z : C),
-    (μ_hom X Y ⊗ 𝟙 (obj Z)) ≫ μ_hom (X ⊗ Y) Z ≫ map' (associator X Y Z).hom
-  = (associator (obj X) (obj Y) (obj Z)).hom ≫ (𝟙 (obj X) ⊗ μ_hom Y Z) ≫ μ_hom X (Y ⊗ Z)
+    ((μ X Y).hom ⊗ 𝟙 (obj Z)) ≫ (μ (X ⊗ Y) Z).hom ≫ map' (associator X Y Z).hom
+  = (associator (obj X) (obj Y) (obj Z)).hom ≫ (𝟙 (obj X) ⊗ (μ Y Z).hom) ≫ (μ X (Y ⊗ Z)).hom
   . obviously)
 -- unitality
 (left_unitality'  : ∀ X : C,
     (left_unitor (obj X)).hom
-  = (ε ⊗ 𝟙 (obj X)) ≫ μ_hom (tensor_unit C) X ≫ map' (left_unitor X).hom
+  = (ε ⊗ 𝟙 (obj X)) ≫ (μ (tensor_unit C) X).hom ≫ map' (left_unitor X).hom
   . obviously)
 (right_unitality' : ∀ X : C,
     (right_unitor (obj X)).hom
-  = (𝟙 (obj X) ⊗ ε) ≫ μ_hom X (tensor_unit C) ≫ map' (right_unitor X).hom
+  = (𝟙 (obj X) ⊗ ε) ≫ (μ X (tensor_unit C)).hom ≫ map' (right_unitor X).hom
   . obviously)
 
 restate_axiom monoidal_functor.left_unitality'
@@ -80,7 +80,7 @@ include 𝒞 𝒟 ℰ
 def monoidal_functor.comp
   (F : monoidal_functor C D) (G : monoidal_functor D E) : monoidal_functor C E :=
 { ε                := G.ε ≫ (G.map F.ε),
-  μ_hom            := λ X Y, G.μ_hom (F.obj X) (F.obj Y) ≫ G.map (F.μ_hom X Y),
+  μ                := λ X Y, G.μ (F.obj X) (F.obj Y) ≫ G.map (F.μ X Y),
   μ_natural        := sorry,
   associativity'   := sorry,
   left_unitality'  := sorry,
