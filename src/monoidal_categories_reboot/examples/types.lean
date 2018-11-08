@@ -4,6 +4,7 @@ import category_theory.functor
 import category_theory.products
 import category_theory.natural_isomorphism
 import ..monoidal_category
+import ..braided_monoidal_category
 open category_theory
 open tactic
 
@@ -14,6 +15,7 @@ namespace category_theory.monoidal
 section
 
 open monoidal_category
+open braided_monoidal_category
 
 def func_prod {α β γ δ : Type u} (f : α → β) (g : γ → δ) : (α × γ) → (β × δ) :=
 λ X, ⟨f X.1, g X.2⟩
@@ -26,8 +28,11 @@ def types_associator (α β γ : Type u) : (α × β) × γ → α × (β × γ)
 λ X, ⟨X.1.1, ⟨X.1.2, X.2⟩⟩
 def types_associator_inv (α β γ : Type u) : α × (β × γ) → (α × β) × γ :=
 λ X, ⟨⟨X.1, X.2.1⟩, X.2.2⟩
+def types_braiding (α β : Type u) : α × β → β × α :=
+λ X, ⟨X.2, X.1⟩
+def types_braiding_inv := types_braiding
 
-instance types : monoidal_category.{(u+1) u} (Type u) := {
+instance types : symmetric_monoidal_category.{(u+1) u} (Type u) := {
   hom  := λ X Y, X → Y,
   id   := λ X, id,
   comp := λ _ _ _ f g, g ∘ f,
@@ -42,7 +47,10 @@ instance types : monoidal_category.{(u+1) u} (Type u) := {
       inv := types_right_unitor_inv X },
   associator := λ X Y Z,
     { hom := types_associator X Y Z,
-      inv := types_associator_inv X Y Z}
+      inv := types_associator_inv X Y Z},
+  braiding := λ X Y,
+    { hom := types_braiding X Y,
+      inv := types_braiding_inv Y X }
 }
 
 end

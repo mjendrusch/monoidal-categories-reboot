@@ -123,18 +123,18 @@ open monoidal_category
 @[reducible] def monoidal_category.associator_nat_iso :
   left_assoc_functor C ≅ right_assoc_functor C :=
 nat_iso.of_components
-  (by intros; dsimp; apply associator)
-  (by intros; dsimp; apply associator_naturality)
+  (by intros; simp; apply associator)
+  (by intros; simp; apply associator_naturality)
 @[reducible] def monoidal_category.left_unitor_nat_iso :
   left_unitor_functor C ≅ functor.id C :=
 nat_iso.of_components
-  (by intros; dsimp; apply left_unitor)
-  (by intros; dsimp; apply left_unitor_naturality)
+  (by intros; simp; apply left_unitor)
+  (by intros; simp; apply left_unitor_naturality)
 @[reducible] def monoidal_category.right_unitor_nat_iso :
   right_unitor_functor C ≅ functor.id C :=
 nat_iso.of_components
-  (by intros; dsimp; apply right_unitor)
-  (by intros; dsimp; apply right_unitor_naturality)
+  (by intros; simp; apply right_unitor)
+  (by intros; simp; apply right_unitor_naturality)
 
 end
 
