@@ -16,18 +16,6 @@ section
 
 open monoidal_category
 
-def func_prod {α β γ δ : Type u} (f : α → β) (g : γ → δ) : (α × γ) → (β × δ) :=
-λ X, ⟨f X.1, g X.2⟩
-
-def types_left_unitor (α : Type u) : punit × α → α := λ X, X.2
-def types_left_unitor_inv (α : Type u) : α → punit × α := λ X, ⟨punit.star, X⟩
-def types_right_unitor (α : Type u) : α × punit → α := λ X, X.1
-def types_right_unitor_inv (α : Type u) : α → α × punit := λ X, ⟨X, punit.star⟩
-def types_associator (α β γ : Type u) : (α × β) × γ → α × (β × γ) :=
-λ X, ⟨X.1.1, ⟨X.1.2, X.2⟩⟩
-def types_associator_inv (α β γ : Type u) : α × (β × γ) → (α × β) × γ :=
-λ X, ⟨⟨X.1, X.2.1⟩, X.2.2⟩
-
 inductive nat_hom (m n : ℕ) : Type 
 | mk : nat_hom
 
@@ -42,7 +30,7 @@ nat_hom.mk X Z
 @[simp] def nat_tensor_hom (A B C D : ℕ) (f : nat_hom A B) (g : nat_hom C D) :
   nat_hom (A + C) (B + D) := nat_hom.mk (A + C) (B + D)
 
-instance types : monoidal_category (nat) :=
+instance naturals : monoidal_category (nat) :=
 { hom  := λ X Y, nat_hom X Y,
   id   := nat_id,
   comp := nat_comp,
