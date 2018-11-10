@@ -33,9 +33,11 @@ def types_braiding (α β : Type u) : α × β → β × α :=
 def types_braiding_inv := types_braiding
 
 instance types : symmetric_monoidal_category.{(u+1) u} (Type u) := {
-  hom  := λ X Y, X → Y,
-  id   := λ X, id,
-  comp := λ _ _ _ f g, g ∘ f,
+  -- Note: these aren't actually necessary, and Lean automatically
+  -- looks for existing instances of parent typeclasses.
+  -- hom  := λ X Y, X → Y,
+  -- id   := λ X, id,
+  -- comp := λ _ _ _ f g, g ∘ f,
   tensor_obj := λ X Y, X × Y,
   tensor_hom := λ _ _ _ _ f g, func_prod f g,
   tensor_unit := punit,

@@ -44,11 +44,11 @@ variables (C : Type u) [𝒞 : braided_monoidal_category.{u v} C]
 include 𝒞
 
 @[reducible] def braided_monoidal_category.braiding_functor : (C × C) ⥤ C :=
-{ obj  := λ X, X.2 ⊗ X.1,
-  map' := λ {X Y : C × C} (f : X ⟶ Y), f.2 ⊗ f.1 }
+{ obj := λ X, X.2 ⊗ X.1,
+  map := λ {X Y : C × C} (f : X ⟶ Y), f.2 ⊗ f.1 }
 @[reducible] def braided_monoidal_category.non_braiding_functor : (C × C) ⥤ C :=
-{ obj  := λ X, X.1 ⊗ X.2,
-  map' := λ {X Y : C × C} (f : X ⟶ Y), f.1 ⊗ f.2 }
+{ obj := λ X, X.1 ⊗ X.2,
+  map := λ {X Y : C × C} (f : X ⟶ Y), f.1 ⊗ f.2 }
 
 open braided_monoidal_category
 
