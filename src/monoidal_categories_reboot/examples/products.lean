@@ -4,14 +4,15 @@
 
 import category_theory.limits.binary_products
 import category_theory.limits.terminal
+import category_theory.limits.types
 import ..braided_monoidal_category
 
 open category_theory
 open category_theory.monoidal
 
-@[obviously] meta def obviously_products := tactic.tidy { tactics := extended_tidy_tactics }
-
 universes u v
+
+@[obviously] meta def obviously_products := tactic.tidy { tactics := extended_tidy_tactics }
 
 namespace category_theory.limits
 
@@ -90,3 +91,10 @@ instance symmetric_monoidal_of_has_products : symmetric_monoidal_category.{u v} 
 { symmetry' := binary_product.symmetry }
 
 end category_theory.monoidal
+
+-- Hmm, these should work, but don't.
+
+example : category.{u+1 u} (Type u) := by apply_instance
+
+example : symmetric_monoidal_category.{u+1 u} (Type u) := by apply_instance
+
