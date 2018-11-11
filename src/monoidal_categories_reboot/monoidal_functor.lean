@@ -86,9 +86,9 @@ def monoidal_functor.comp
   (F : monoidal_functor C D) (G : monoidal_functor D E) : monoidal_functor C E :=
 { ε                := G.ε ≫ (G.map F.ε),
   μ                := λ X Y, G.μ (F.obj X) (F.obj Y) ≪≫ G.on_iso (F.μ X Y),
-  μ_natural'       := sorry,
-  associativity'   := sorry,
-  left_unitality'  := sorry,
+  μ_natural'       := by obviously,
+  associativity'   := sorry, -- obviously fails on this one
+  left_unitality'  := by obviously,
   right_unitality' := sorry,
   .. (F.to_functor) ⋙ (G.to_functor) }
 

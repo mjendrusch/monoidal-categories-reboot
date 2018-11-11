@@ -57,13 +57,15 @@ open category_theory.limits
 
 namespace category_theory.monoidal
 
-variables {C : Type u} [𝒞 : category.{u v} C] [has_products.{u v} C]
+variables (C : Type u) [𝒞 : category.{u v} C] [has_products.{u v} C]
 include 𝒞
 
 instance : has_binary_products.{u v} C := has_binary_products_of_has_products
 instance : has_terminal.{u v} C := has_terminal_of_has_products C
 
-instance monoidal_of_has_products : monoidal_category.{u v} C :=
+-- TODO extract the rewrite proofs obviously produces below.
+
+def monoidal_of_has_products : monoidal_category.{u v} C :=
 { tensor_obj := λ X Y, limits.prod X Y,
   tensor_hom := λ _ _ _ _ f g, limits.prod.map f g,
   tensor_unit := terminal C,
@@ -80,21 +82,21 @@ instance monoidal_of_has_products : monoidal_category.{u v} C :=
   triangle' := sorry, -- works `by obviously`
 }
 
-instance braided_monoidal_of_has_products : braided_monoidal_category.{u v} C :=
+def braided_monoidal_of_has_products : braided_monoidal_category.{u v} C :=
 { braiding := binary_product.braiding,
   braiding_naturality' := sorry, -- works `by obviously`
   hexagon_forward' := sorry, -- works `by obviously`, but slow,
   hexagon_reverse' := sorry, -- works `by obviously`, but slow
+  .. monoidal_of_has_products C
 }
 
-instance symmetric_monoidal_of_has_products : symmetric_monoidal_category.{u v} C :=
-{ symmetry' := binary_product.symmetry }
+def symmetric_monoidal_of_has_products : symmetric_monoidal_category.{u v} C :=
+{ symmetry' := binary_product.symmetry,
+  .. braided_monoidal_of_has_products C }
 
 end category_theory.monoidal
 
--- Hmm, these should work, but don't.
+open category_theory.monoidal
 
-example : category.{u+1 u} (Type u) := by apply_instance
-
-example : symmetric_monoidal_category.{u+1 u} (Type u) := by apply_instance
-
+instance Type_symmetric : symmetric_monoidal_category.{u+1 u} (Type u) :=
+symmetric_monoidal_of_has_products (Type u)

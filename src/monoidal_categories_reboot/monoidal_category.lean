@@ -75,25 +75,25 @@ infixr ` ⊗ `:80 := tensor_hom
 
 variables {U V W X Y Z : C}
 
-@[ematch] definition interchange (f : U ⟶ V) (g : V ⟶ W) (h : X ⟶ Y) (k : Y ⟶ Z)
+@[search] definition interchange (f : U ⟶ V) (g : V ⟶ W) (h : X ⟶ Y) (k : Y ⟶ Z)
   : (f ≫ g) ⊗ (h ≫ k) = (f ⊗ h) ≫ (g ⊗ k) :=
 tensor_map_comp C f h g k
 
-@[simp,ematch] lemma interchange_left_identity (f : W ⟶ X) (g : X ⟶ Y) :
+@[simp,search] lemma interchange_left_identity (f : W ⟶ X) (g : X ⟶ Y) :
   (f ⊗ (𝟙 Z)) ≫ (g ⊗ (𝟙 Z)) = (f ≫ g) ⊗ (𝟙 Z) :=
 begin
   rw ←interchange,
   simp
 end
 
-@[simp,ematch] lemma interchange_right_identity (f : W ⟶ X) (g : X ⟶ Y) :
+@[simp,search] lemma interchange_right_identity (f : W ⟶ X) (g : X ⟶ Y) :
   (𝟙 Z ⊗ f) ≫ (𝟙 Z ⊗ g) = (𝟙 Z) ⊗ (f ≫ g) :=
 begin
   rw ←interchange,
   simp
 end
 
-@[ematch] lemma interchange_identities (f : W ⟶ X) (g : Y ⟶ Z) :
+@[search] lemma interchange_identities (f : W ⟶ X) (g : Y ⟶ Z) :
   ((𝟙 Y) ⊗ f) ≫ (g ⊗ (𝟙 X)) = (g ⊗ (𝟙 W)) ≫ ((𝟙 Z) ⊗ f) :=
 begin
   rw ←interchange,
