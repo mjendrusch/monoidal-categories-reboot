@@ -17,9 +17,6 @@ section
 open monoidal_category
 open braided_monoidal_category
 
-def func_prod {α β γ δ : Type u} (f : α → β) (g : γ → δ) : (α × γ) → (β × δ) :=
-λ X, ⟨f X.1, g X.2⟩
-
 def types_left_unitor (α : Type u) : punit × α → α := λ X, X.2
 def types_left_unitor_inv (α : Type u) : α → punit × α := λ X, ⟨punit.star, X⟩
 def types_right_unitor (α : Type u) : α × punit → α := λ X, X.1
@@ -32,14 +29,9 @@ def types_braiding (α β : Type u) : α × β → β × α :=
 λ X, ⟨X.2, X.1⟩
 def types_braiding_inv := types_braiding
 
-instance types : symmetric_monoidal_category.{(u+1) u} (Type u) := {
-  -- Note: these aren't actually necessary, and Lean automatically
-  -- looks for existing instances of parent typeclasses.
-  -- hom  := λ X Y, X → Y,
-  -- id   := λ X, id,
-  -- comp := λ _ _ _ f g, g ∘ f,
-  tensor_obj := λ X Y, X × Y,
-  tensor_hom := λ _ _ _ _ f g, func_prod f g,
+instance types : symmetric_monoidal_category.{(u+1) u} (Type u) :=
+{ tensor_obj := λ X Y, X × Y,
+  tensor_hom := λ _ _ _ _ f g, prod.map f g,
   tensor_unit := punit,
   left_unitor := λ X,
     { hom := types_left_unitor X,
@@ -52,8 +44,7 @@ instance types : symmetric_monoidal_category.{(u+1) u} (Type u) := {
       inv := types_associator_inv X Y Z},
   braiding := λ X Y,
     { hom := types_braiding X Y,
-      inv := types_braiding_inv Y X }
-}
+      inv := types_braiding_inv Y X } }
 
 end
 
