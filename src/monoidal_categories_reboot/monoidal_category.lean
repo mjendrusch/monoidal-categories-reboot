@@ -4,7 +4,9 @@ import category_theory.category
 import category_theory.functor
 import category_theory.products
 import category_theory.natural_isomorphism
+import category_theory.tactics.obviously -- Give ourselves access to `rewrite_search`
 import .tensor_product
+
 open category_theory
 open tactic
 
@@ -43,19 +45,19 @@ class monoidal_category (C : Type u) extends category.{u v} C :=
 (triangle'                : triangle @tensor_hom left_unitor right_unitor associator . obviously)
 
 restate_axiom monoidal_category.tensor_map_id'
-attribute [simp,ematch] monoidal_category.tensor_map_id
+attribute [simp,search] monoidal_category.tensor_map_id
 restate_axiom monoidal_category.tensor_map_comp'
-attribute [simp,ematch] monoidal_category.tensor_map_comp
+attribute [simp,search] monoidal_category.tensor_map_comp
 restate_axiom monoidal_category.associator_naturality'
-attribute [ematch] monoidal_category.associator_naturality
+attribute [search] monoidal_category.associator_naturality
 restate_axiom monoidal_category.left_unitor_naturality'
-attribute [ematch] monoidal_category.left_unitor_naturality
+attribute [search] monoidal_category.left_unitor_naturality
 restate_axiom monoidal_category.right_unitor_naturality'
-attribute [ematch] monoidal_category.right_unitor_naturality
+attribute [search] monoidal_category.right_unitor_naturality
 restate_axiom monoidal_category.pentagon'
-attribute [ematch] monoidal_category.pentagon
+attribute [search] monoidal_category.pentagon
 restate_axiom monoidal_category.triangle'
-attribute [ematch] monoidal_category.triangle
+attribute [search] monoidal_category.triangle
 
 section
 
@@ -68,30 +70,30 @@ infixr ` ⊗ `:80 := tensor_obj
 infixr ` ⊗ `:80 := tensor_hom
 
 @[reducible] def monoidal_category.tensor : (C × C) ⥤ C :=
-{ obj       := λ X, X.1 ⊗ X.2,
-  map'      := λ {X Y : C × C} (f : X ⟶ Y), f.1 ⊗ f.2 }
+{ obj := λ X, X.1 ⊗ X.2,
+  map := λ {X Y : C × C} (f : X ⟶ Y), f.1 ⊗ f.2 }
 
 variables {U V W X Y Z : C}
 
-@[ematch] definition interchange (f : U ⟶ V) (g : V ⟶ W) (h : X ⟶ Y) (k : Y ⟶ Z)
+@[search] definition interchange (f : U ⟶ V) (g : V ⟶ W) (h : X ⟶ Y) (k : Y ⟶ Z)
   : (f ≫ g) ⊗ (h ≫ k) = (f ⊗ h) ≫ (g ⊗ k) :=
 tensor_map_comp C f h g k
 
-@[simp,ematch] lemma interchange_left_identity (f : W ⟶ X) (g : X ⟶ Y) :
+@[simp,search] lemma interchange_left_identity (f : W ⟶ X) (g : X ⟶ Y) :
   (f ⊗ (𝟙 Z)) ≫ (g ⊗ (𝟙 Z)) = (f ≫ g) ⊗ (𝟙 Z) :=
 begin
   rw ←interchange,
   simp
 end
 
-@[simp,ematch] lemma interchange_right_identity (f : W ⟶ X) (g : X ⟶ Y) :
+@[simp,search] lemma interchange_right_identity (f : W ⟶ X) (g : X ⟶ Y) :
   (𝟙 Z ⊗ f) ≫ (𝟙 Z ⊗ g) = (𝟙 Z) ⊗ (f ≫ g) :=
 begin
   rw ←interchange,
   simp
 end
 
-@[ematch] lemma interchange_identities (f : W ⟶ X) (g : Y ⟶ Z) :
+@[search] lemma interchange_identities (f : W ⟶ X) (g : Y ⟶ Z) :
   ((𝟙 Y) ⊗ f) ≫ (g ⊗ (𝟙 X)) = (g ⊗ (𝟙 W)) ≫ ((𝟙 Z) ⊗ f) :=
 begin
   rw ←interchange,
@@ -102,19 +104,19 @@ end
 open monoidal_category
 
 @[reducible] def monoidal_category.left_assoc_functor : (C × C × C) ⥤ C :=
-{ obj  := λ X, (X.1 ⊗ X.2.1) ⊗ X.2.2,
-  map' := λ {X Y : C × C × C} (f : X ⟶ Y),
+{ obj := λ X, (X.1 ⊗ X.2.1) ⊗ X.2.2,
+  map := λ {X Y : C × C × C} (f : X ⟶ Y),
     (f.1 ⊗ f.2.1) ⊗ f.2.2 }
 @[reducible] def monoidal_category.right_assoc_functor : (C × C × C) ⥤ C :=
-{ obj  := λ X, X.1 ⊗ (X.2.1 ⊗ X.2.2),
-  map' := λ {X Y : C × C × C} (f : X ⟶ Y),
+{ obj := λ X, X.1 ⊗ (X.2.1 ⊗ X.2.2),
+  map := λ {X Y : C × C × C} (f : X ⟶ Y),
     f.1 ⊗ (f.2.1 ⊗ f.2.2) }
 @[reducible] def monoidal_category.left_unitor_functor : C ⥤ C :=
-{ obj  := λ X, tensor_unit C ⊗ X,
-  map' := λ {X Y : C} (f : X ⟶ Y), (𝟙 (tensor_unit C)) ⊗ f }
+{ obj := λ X, tensor_unit C ⊗ X,
+  map := λ {X Y : C} (f : X ⟶ Y), (𝟙 (tensor_unit C)) ⊗ f }
 @[reducible] def monoidal_category.right_unitor_functor : C ⥤ C :=
-{ obj  := λ X, X ⊗ tensor_unit C,
-  map' := λ {X Y : C} (f : X ⟶ Y), f ⊗ (𝟙 (tensor_unit C)) }
+{ obj := λ X, X ⊗ tensor_unit C,
+  map := λ {X Y : C} (f : X ⟶ Y), f ⊗ (𝟙 (tensor_unit C)) }
 
 open monoidal_category
 
