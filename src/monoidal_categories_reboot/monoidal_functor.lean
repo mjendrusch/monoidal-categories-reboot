@@ -29,7 +29,7 @@ structure monoidal_functor
   (D : Type u₂) [𝒟 : monoidal_category.{u₂ v₂} D]
 extends category_theory.functor C D :=
 -- unit morphism
-(ε               : tensor_unit D ⟶ obj (tensor_unit C))
+(ε               : tensor_unit D ≅ obj (tensor_unit C))
 -- natural transformation
 (μ                : Π X Y : C, (obj X) ⊗ (obj Y) ≅ obj (X ⊗ Y))
 (μ_natural'       : ∀ (X Y X' Y' : C)
@@ -44,11 +44,11 @@ extends category_theory.functor C D :=
 -- unitality
 (left_unitality'  : ∀ X : C,
     (left_unitor (obj X)).hom
-  = (ε ⊗ 𝟙 (obj X)) ≫ (μ (tensor_unit C) X).hom ≫ map (left_unitor X).hom
+  = (ε.hom ⊗ 𝟙 (obj X)) ≫ (μ (tensor_unit C) X).hom ≫ map (left_unitor X).hom
   . obviously)
 (right_unitality' : ∀ X : C,
     (right_unitor (obj X)).hom
-  = (𝟙 (obj X) ⊗ ε) ≫ (μ X (tensor_unit C)).hom ≫ map (right_unitor X).hom
+  = (𝟙 (obj X) ⊗ ε.hom) ≫ (μ X (tensor_unit C)).hom ≫ map (right_unitor X).hom
   . obviously)
 
 restate_axiom monoidal_functor.μ_natural'
@@ -84,11 +84,11 @@ include 𝒞 𝒟 ℰ
 
 def monoidal_functor.comp
   (F : monoidal_functor C D) (G : monoidal_functor D E) : monoidal_functor C E :=
-{ ε                := G.ε ≫ (G.map F.ε),
+{ ε                := G.ε ≪≫ (G.on_iso F.ε),
   μ                := λ X Y, G.μ (F.obj X) (F.obj Y) ≪≫ G.on_iso (F.μ X Y),
   μ_natural'       := by obviously,
   associativity'   := sorry, -- obviously fails on this one
-  left_unitality'  := by obviously,
+  left_unitality'  := sorry, -- obviously fails on this one
   right_unitality' := sorry,
   .. (F.to_functor) ⋙ (G.to_functor) }
 
