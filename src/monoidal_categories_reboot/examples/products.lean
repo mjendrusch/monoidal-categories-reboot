@@ -15,24 +15,40 @@ universes u v
 
 namespace category_theory.limits
 
-variables {C : Type u} [𝒞 : category.{u v} C] [has_binary_products.{u v} C]
+attribute [search] prod.lift_fst prod.lift_snd prod.map_fst prod.map_snd
+
+variables {C : Type u} [𝒞 : category.{u v} C]
+          [has_binary_products.{u v} C] [has_terminal.{u v} C]
 include 𝒞
 
-def binary_product.braiding (P Q : C) : limits.prod P Q ≅ limits.prod Q P :=
+@[simp] def binary_product.braiding (P Q : C) : limits.prod P Q ≅ limits.prod Q P :=
 { hom := prod.lift (prod.snd P Q) (prod.fst P Q),
   inv := prod.lift (prod.snd Q P) (prod.fst Q P) }
 
-def binary_product.symmetry (P Q : C) : (binary_product.braiding P Q).hom ≫ (binary_product.braiding Q P).hom = 𝟙 _ :=
-begin
-  dunfold binary_product.braiding,
-  obviously,
-end
+def binary_product.symmetry (P Q : C) :
+  (binary_product.braiding P Q).hom ≫ (binary_product.braiding Q P).hom = 𝟙 _ :=
+by tidy
 
-def binary_product.associativity (P Q R : C) : (limits.prod (limits.prod P Q) R) ≅ (limits.prod P (limits.prod Q R)) :=
-{ hom := prod.lift (prod.fst _ _ ≫ prod.fst _ _) (prod.lift (prod.fst _ _ ≫ prod.snd _ _) (prod.snd _ _)),
-  inv := prod.lift (prod.lift (prod.fst _ _) (prod.snd _ _ ≫ prod.fst _ _)) (prod.snd _ _ ≫ prod.snd _ _),
-  hom_inv_id' := begin ext; simp; rw ← category.assoc; simp, end,
-  inv_hom_id' := begin ext; simp; rw ← category.assoc; simp, end }
+@[simp] def binary_product.associativity
+  (P Q R : C) : (limits.prod (limits.prod P Q) R) ≅ (limits.prod P (limits.prod Q R)) :=
+{ hom :=
+  prod.lift
+    (prod.fst _ _ ≫ prod.fst _ _)
+    (prod.lift (prod.fst _ _ ≫ prod.snd _ _) (prod.snd _ _)),
+  inv :=
+  prod.lift
+    (prod.lift (prod.fst _ _) (prod.snd _ _ ≫ prod.fst _ _))
+    (prod.snd _ _ ≫ prod.snd _ _) }
+
+@[simp] def binary_product.left_unitor
+  (P : C) : (limits.prod (terminal.{u v} C) P) ≅ P :=
+{ hom := prod.snd _ _,
+  inv := prod.lift (terminal.from P) (𝟙 _) }
+
+@[simp] def binary_product.right_unitor
+  (P : C) : (limits.prod P (terminal.{u v} C)) ≅ P :=
+{ hom := prod.fst _ _,
+  inv := prod.lift (𝟙 _) (terminal.from P) }
 
 end category_theory.limits
 
@@ -50,16 +66,27 @@ instance monoidal_of_has_products : monoidal_category.{u v} C :=
 { tensor_obj := λ X Y, limits.prod X Y,
   tensor_hom := λ _ _ _ _ f g, limits.prod.map f g,
   tensor_unit := terminal C,
-  tensor_map_id' := sorry,
-  tensor_map_comp' := sorry,
   associator := binary_product.associativity,
-  associator_naturality' := sorry,
-  left_unitor := sorry,
-  left_unitor_naturality' := sorry,
-  right_unitor := sorry,
-  right_unitor_naturality' := sorry,
-  pentagon' := sorry,
-  triangle' := sorry }
+  left_unitor := binary_product.left_unitor,
+  right_unitor := binary_product.right_unitor,
 
+  tensor_map_id' := sorry, -- works `by obviously`
+  tensor_map_comp' := sorry, -- works `by obviously`
+  associator_naturality' := sorry, -- works `by obviously`
+  left_unitor_naturality' := sorry, -- works `by obviously
+  right_unitor_naturality' := sorry, -- works `by obviously
+  pentagon' := sorry, -- works `by obviously`, but slow,
+  triangle' := sorry, -- works `by obviously`
+}
+
+instance braided_monoidal_of_has_products : braided_monoidal_category.{u v} C :=
+{ braiding := binary_product.braiding,
+  braiding_naturality' := sorry, -- works `by obviously`
+  hexagon_forward' := sorry, -- works `by obviously`, but slow,
+  hexagon_reverse' := sorry, -- works `by obviously`, but slow
+}
+
+instance symmetric_monoidal_of_has_products : symmetric_monoidal_category.{u v} C :=
+{ symmetry' := binary_product.symmetry }
 
 end category_theory.monoidal
