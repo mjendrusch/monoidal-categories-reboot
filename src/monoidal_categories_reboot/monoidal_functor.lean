@@ -72,6 +72,12 @@ include 𝒞 𝒟
 @[reducible] def on_iso (F : monoidal_functor C D) {X Y : C} (f : X ≅ Y) : F.obj X ≅ F.obj Y :=
 F.to_functor.on_iso f
 
+@[search] lemma map_id (F : monoidal_functor C D) (X : C) :
+  F.map (𝟙 X) = 𝟙 (F.obj X) := F.map_id' X
+
+@[search] lemma map_comp (F : monoidal_functor C D) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+  F.map (f ≫ g) = F.map f ≫ F.map g := F.map_comp' f g
+
 end monoidal_functor
 
 section
@@ -86,8 +92,41 @@ def monoidal_functor.comp
   (F : monoidal_functor C D) (G : monoidal_functor D E) : monoidal_functor C E :=
 { ε                := G.ε ≪≫ (G.on_iso F.ε),
   μ                := λ X Y, G.μ (F.obj X) (F.obj Y) ≪≫ G.on_iso (F.μ X Y),
-  μ_natural'       := by obviously,
-  associativity'   := sorry, -- obviously fails on this one
+  μ_natural'       := sorry, -- by obviously, -- works!
+  associativity'   := λ X Y Z,
+  begin
+    -- obviously fails here, but it seems like it should be doable!
+    dsimp,
+    conv { to_rhs,
+      rw ←interchange_right_identity,
+      congr, skip, rw category.assoc,
+      congr, skip, rw ←category.assoc, congr,
+      rw ← G.map_id,
+      rw ← G.μ_natural,
+    },
+    conv { to_rhs,
+      rw ←category.assoc,
+      rw ←category.assoc,
+      rw ←category.assoc,
+      congr, congr,
+      rw category.assoc,
+      rw ←G.associativity,
+    },
+    conv { to_lhs,
+      rw ←interchange_left_identity,
+      rw ←category.assoc, rw ←category.assoc,
+      congr, congr,
+      rw category.assoc,
+      congr, skip,
+      rw ← G.map_id,
+      rw ← G.μ_natural, },
+    repeat { rw category.assoc },
+    apply congr_arg,
+    apply congr_arg,
+    repeat { rw ←G.map_comp },
+    apply congr_arg,
+    rw F.associativity,
+  end,
   left_unitality'  := sorry, -- obviously fails on this one
   right_unitality' := sorry,
   .. (F.to_functor) ⋙ (G.to_functor) }
