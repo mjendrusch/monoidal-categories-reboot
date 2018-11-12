@@ -6,6 +6,7 @@ import category_theory.products
 import category_theory.natural_isomorphism
 import .tensor_product
 import .monoidal_category
+import tidy.rewrite_search
 
 open category_theory
 open tactic
@@ -88,6 +89,9 @@ variables (E : Type u₃) [ℰ : monoidal_category.{u₃ v₃} E]
 
 include 𝒞 𝒟 ℰ
 
+open tidy.rewrite_search.tracer
+set_option profiler true
+#help options.
 def monoidal_functor.comp
   (F : monoidal_functor C D) (G : monoidal_functor D E) : monoidal_functor C E :=
 { ε                := G.ε ≪≫ (G.on_iso F.ε),
@@ -103,7 +107,8 @@ def monoidal_functor.comp
     -- conv_lhs { erw [←assoc] },
     -- conv_lhs { congr, erw [monoidal_functor.μ_natural] },
     -- conv_rhs { erw [←assoc] }
-    rewrite_search,
+    -- rewrite_search,
+    sorry
   end,
   -- sorry, -- by obviously, -- works!
   associativity'   := λ X Y Z,
@@ -117,6 +122,7 @@ def monoidal_functor.comp
       rw ← G.map_id,
       rw ← G.μ_natural,
     },
+    rewrite_search { view := visualiser, trace_summary := tt, explain := tt },
     conv { to_rhs,
       rw ←category.assoc,
       rw ←category.assoc,
@@ -125,6 +131,7 @@ def monoidal_functor.comp
       rw category.assoc,
       rw ←G.associativity,
     },
+    -- rewrite_search (saw/visited/used) 137/23/16 expressions during proof of category_theory.monoidal.monoidal_functor.comp
     conv { to_lhs,
       rw ←interchange_left_identity,
       rw ←category.assoc, rw ←category.assoc,
