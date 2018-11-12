@@ -92,7 +92,20 @@ def monoidal_functor.comp
   (F : monoidal_functor C D) (G : monoidal_functor D E) : monoidal_functor C E :=
 { ε                := G.ε ≪≫ (G.on_iso F.ε),
   μ                := λ X Y, G.μ (F.obj X) (F.obj Y) ≪≫ G.on_iso (F.μ X Y),
-  μ_natural'       := sorry, -- by obviously, -- works!
+  μ_natural'       :=
+  begin
+    tidy,
+    -- rewrite_search {explain := tt}, -- gives bogus output
+    /- `rewrite_search` says -/
+    -- conv_lhs { congr, skip, erw [←map_comp] },
+    -- conv_lhs { congr, skip, congr, skip, erw [monoidal_functor.μ_natural] },
+    -- conv_lhs { congr, skip, erw [map_comp] },
+    -- conv_lhs { erw [←assoc] },
+    -- conv_lhs { congr, erw [monoidal_functor.μ_natural] },
+    -- conv_rhs { erw [←assoc] }
+    rewrite_search,
+  end,
+  -- sorry, -- by obviously, -- works!
   associativity'   := λ X Y Z,
   begin
     -- obviously fails here, but it seems like it should be doable!
