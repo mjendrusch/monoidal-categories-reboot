@@ -91,7 +91,7 @@ include 𝒞 𝒟 ℰ
 
 open tidy.rewrite_search.tracer
 set_option profiler true
-#help options.
+
 def monoidal_functor.comp
   (F : monoidal_functor C D) (G : monoidal_functor D E) : monoidal_functor C E :=
 { ε                := G.ε ≪≫ (G.on_iso F.ε),
@@ -122,7 +122,7 @@ def monoidal_functor.comp
       rw ← G.map_id,
       rw ← G.μ_natural,
     },
-    -- rewrite_search { view := visualiser, trace_summary := tt, explain := tt },
+    rewrite_search { view := visualiser, trace_summary := tt, explain := tt, max_iterations := 1000000 },
     conv { to_rhs,
       rw ←category.assoc,
       rw ←category.assoc,
