@@ -6,9 +6,37 @@ import category_theory.products
 import category_theory.natural_isomorphism
 import .tensor_product
 import .monoidal_category
+import tidy.rewrite_search
+import tactic.interactive
 
 open category_theory
 open tactic
+
+universe u
+
+meta def repeat_with_results {α : Type} (t : tactic α) : tactic (list α) :=
+(do r ← t,
+    s ← repeat_with_results,
+    return (r :: s)) <|> return []
+
+meta def repeat_count {α : Type} (t : tactic α) : tactic ℕ :=
+do r ← repeat_with_results t,
+   return r.length
+
+/--
+`slice` is a conv tactic; if the current focus is a composition of several morphisms,
+`slice a b` reassociates as needed, and zooms in on the `a`-th through `b`-th morphisms.
+
+Thus if the current focus is `(a ≫ b) ≫ ((c ≫ d) ≫ e)`, then `slice 2 3` zooms to `b ≫ c`.
+ -/
+meta def slice (a b : ℕ) : conv unit :=
+do repeat $ to_expr ``(category.assoc) >>= λ e, tactic.rewrite_target e {symm:=ff},
+   iterate_range (a-1) (a-1) (do conv.congr, conv.skip),
+   k ← repeat_count $ to_expr ``(category.assoc) >>= λ e, tactic.rewrite_target e {symm:=tt},
+   iterate_range (k+1+a-b) (k+1+a-b) conv.congr,
+   repeat $ to_expr ``(category.assoc) >>= λ e, tactic.rewrite_target e {symm:=ff},
+   rotate 1,
+   iterate_exactly (k+1+a-b) conv.skip
 
 universes u₁ u₂ u₃ v₁ v₂ v₃
 
@@ -72,6 +100,12 @@ include 𝒞 𝒟
 @[reducible] def on_iso (F : monoidal_functor C D) {X Y : C} (f : X ≅ Y) : F.obj X ≅ F.obj Y :=
 F.to_functor.on_iso f
 
+@[search] lemma map_id (F : monoidal_functor C D) (X : C) :
+  F.map (𝟙 X) = 𝟙 (F.obj X) := F.map_id' X
+
+@[search] lemma map_comp (F : monoidal_functor C D) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+  F.map (f ≫ g) = F.map f ≫ F.map g := F.map_comp' f g
+
 end monoidal_functor
 
 section
@@ -82,14 +116,84 @@ variables (E : Type u₃) [ℰ : monoidal_category.{u₃ v₃} E]
 
 include 𝒞 𝒟 ℰ
 
+open tidy.rewrite_search.tracer
+-- set_option profiler true
+
 def monoidal_functor.comp
   (F : monoidal_functor C D) (G : monoidal_functor D E) : monoidal_functor C E :=
 { ε                := G.ε ≪≫ (G.on_iso F.ε),
   μ                := λ X Y, G.μ (F.obj X) (F.obj Y) ≪≫ G.on_iso (F.μ X Y),
-  μ_natural'       := by obviously,
-  associativity'   := sorry, -- obviously fails on this one
-  left_unitality'  := sorry, -- obviously fails on this one
-  right_unitality' := sorry,
+  μ_natural'       :=
+  begin
+    tidy,
+    /- `rewrite_search` says -/ -- FIXME actually, its output is broken
+    conv_lhs { congr, skip, erw [←map_comp] },
+    conv_lhs { erw [monoidal_functor.μ_natural] },
+    conv_lhs { congr, skip, erw [map_comp] },
+    conv_lhs { erw [←category.assoc] },
+    conv_lhs { congr, erw [monoidal_functor.μ_natural] },
+    conv_rhs { erw [←category.assoc] },
+  end,
+  associativity'   := λ X Y Z,
+  begin
+    -- obviously fails here, but it seems like it should be doable!
+    dsimp,
+    conv { to_rhs,
+      rw ←interchange_right_identity,
+      slice 3 4,
+      rw ← G.map_id,
+      rw ← G.μ_natural,
+    },
+    -- rewrite_search { view := visualiser, trace_summary := tt, explain := tt, max_iterations := 50 }, -- fails
+    conv { to_rhs,
+      slice 1 3,
+      rw ←G.associativity,
+    },
+    -- rewrite_search (saw/visited/used) 137/23/16 expressions during proof of category_theory.monoidal.monoidal_functor.comp
+    conv { to_lhs,
+      rw ←interchange_left_identity,
+      slice 2 3,
+      rw ← G.map_id,
+      rw ← G.μ_natural, },
+    repeat { rw category.assoc },
+    repeat { rw ←G.map_comp },
+    rw F.associativity,
+  end,
+  left_unitality'  := λ X,
+  begin
+    -- Don't attempt to read this; it is a Frankenstein effort of Scott + rewrite_search
+    dsimp,
+    rw G.left_unitality,
+    rw ←interchange_left_identity,
+    repeat {rw category.assoc},
+    apply congr_arg,
+    /- `rewrite_search` says -/ -- FIXME actually, its output is broken
+    rw F.left_unitality,
+    conv_lhs { congr, skip, erw [map_comp] },
+    conv_lhs { erw [←category.id_app] },
+    conv_lhs { erw [←category.assoc] },
+    conv_lhs { congr, erw [monoidal_functor.μ_natural] },
+    conv_lhs { congr, congr, congr, skip, erw [map_id] },
+    conv_rhs { erw [←category.assoc] },
+    erw map_comp,
+  end,
+  right_unitality' := λ X,
+  begin
+    dsimp,
+    rw G.right_unitality,
+    rw ←interchange_right_identity,
+    repeat {rw category.assoc},
+    apply congr_arg,
+    /- `rewrite_search` says -/ -- FIXME actually, its output is broken
+    rw F.right_unitality,
+    conv_lhs { congr, skip, erw [map_comp] },
+    conv_lhs { erw [←category.id_app] },
+    conv_lhs { erw [←category.assoc] },
+    conv_lhs { congr, erw [monoidal_functor.μ_natural] },
+    conv_lhs { congr, congr, congr, erw [map_id] },
+    conv_rhs { erw [←category.assoc] },
+    erw map_comp,
+  end,
   .. (F.to_functor) ⋙ (G.to_functor) }
 
 end
