@@ -122,7 +122,7 @@ def monoidal_functor.comp
       rw ← G.map_id,
       rw ← G.μ_natural,
     },
-    rewrite_search { view := visualiser, trace_summary := tt, explain := tt, max_iterations := 1000000 },
+    rewrite_search { view := visualiser, trace_summary := tt, explain := tt, max_iterations := 50 },
     conv { to_rhs,
       rw ←category.assoc,
       rw ←category.assoc,
