@@ -5,6 +5,7 @@ import category_theory.functor
 import category_theory.products
 import category_theory.natural_isomorphism
 import ..monoidal_category
+import ..monoid_object
 open category_theory
 open tactic
 
@@ -52,5 +53,15 @@ instance naturals : monoidal_category (nat) :=
                         (nat_tensor_obj (nat_tensor_obj X Y) Z)} }
 
 end
+
+instance nat_monoid_object (n : nat) : monoid_object n :=
+{ unit    := nat_hom.mk 0 n,
+  product := nat_hom.mk (n + n) n }
+
+instance nat_comonoid_object (n : nat) : comonoid_object n :=
+{ counit    := nat_hom.mk n 0,
+  coproduct := nat_hom.mk n (n + n) }
+
+instance nat_frobenius_object (n : nat) : frobenius_object n := {}
 
 end category_theory.monoidal

@@ -16,7 +16,7 @@ open category_theory.nat_iso
 
 namespace category_theory.monoidal
 
-class braided_monoidal_category (C : Type u) extends monoidal_category C :=
+class braided_monoidal_category (C : Type u) extends monoidal_category.{u v} C :=
 -- braiding natural iso:
 (braiding             : Π X Y : C, X ⊗ Y ≅ Y ⊗ X)
 (braiding_naturality' : ∀ {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
@@ -31,12 +31,13 @@ class braided_monoidal_category (C : Type u) extends monoidal_category C :=
   = ((𝟙 X) ⊗ (braiding Y Z).hom) ≫ (associator X Z Y).inv ≫ (braiding X Z).hom ⊗ (𝟙 Y)
   . obviously)
 
+
 restate_axiom braided_monoidal_category.braiding_naturality'
-attribute [ematch] braided_monoidal_category.braiding_naturality
+attribute [simp,search] braided_monoidal_category.braiding_naturality
 restate_axiom braided_monoidal_category.hexagon_forward'
-attribute [ematch] braided_monoidal_category.hexagon_forward
+attribute [simp,search] braided_monoidal_category.hexagon_forward
 restate_axiom braided_monoidal_category.hexagon_reverse'
-attribute [ematch] braided_monoidal_category.hexagon_reverse
+attribute [simp,search] braided_monoidal_category.hexagon_reverse
 
 section
 
@@ -50,7 +51,15 @@ include 𝒞
 { obj := λ X, X.1 ⊗ X.2,
   map := λ {X Y : C × C} (f : X ⟶ Y), f.1 ⊗ f.2 }
 
+open monoidal_category
 open braided_monoidal_category
+
+@[simp,search] def braiding_of_product (X Y Z : C) :
+  (braiding (X ⊗ Y) Z).hom =
+  (associator X Y Z).hom ≫ ((𝟙 X) ⊗ (braiding Y Z).hom) ≫ (associator X Z Y).inv ≫ ((braiding X Z).hom ⊗ (𝟙 Y)) ≫ (associator Z X Y).hom :=
+begin
+  obviously,
+end
 
 def braided_monoidal_category.braiding_nat_iso : braiding_functor C ≅ non_braiding_functor C :=
 nat_iso.of_components
@@ -64,6 +73,6 @@ class symmetric_monoidal_category (C : Type u) extends braided_monoidal_category
 (symmetry' : ∀ X Y : C, (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 (X ⊗ Y) . obviously)
 
 restate_axiom symmetric_monoidal_category.symmetry'
-attribute [ematch] symmetric_monoidal_category.symmetry
+attribute [simp,search] symmetric_monoidal_category.symmetry
 
 end category_theory.monoidal
