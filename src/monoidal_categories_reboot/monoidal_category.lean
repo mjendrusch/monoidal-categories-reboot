@@ -62,6 +62,19 @@ restate_axiom monoidal_category.triangle'
 attribute [search] monoidal_category.triangle
 
 section
+open monoidal_category
+
+def one {C : Type u} [monoidal_category.{u v} C] (X : C) : X ≅ X :=
+{ hom := 𝟙 X,
+  inv := 𝟙 X }
+
+def tensor_iso {C : Type u} {X Y X' Y' : C} [monoidal_category.{u v} C] (f : X ≅ Y) (g : X' ≅ Y') :
+    tensor_obj X X' ≅ tensor_obj Y Y' :=
+{ hom := tensor_hom f.hom g.hom,
+  inv := tensor_hom f.inv g.inv }
+end
+
+section
 
 variables (C : Type u) [𝒞 : monoidal_category.{u v} C]
 include 𝒞
@@ -70,6 +83,7 @@ open monoidal_category
 
 infixr ` ⊗ `:80 := tensor_obj
 infixr ` ⊗ `:80 := tensor_hom
+infixr ` ⊗ `:80 := tensor_iso
 
 @[reducible] def monoidal_category.tensor : (C × C) ⥤ C :=
 { obj := λ X, X.1 ⊗ X.2,
@@ -139,6 +153,110 @@ nat_iso.of_components
 nat_iso.of_components
   (by intros; simp; apply right_unitor)
   (by intros; simp; apply right_unitor_naturality)
+
+instance tensor_iso_of_iso
+    {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y')
+    [is_iso f] [is_iso g] : is_iso (f ⊗ g) :=
+{ inv := (is_iso.inv f) ⊗ (is_iso.inv g) }
+
+@[simp,search] lemma tensor_left_equiv
+    {X Y : C} (f g : X ⟶ Y) :
+    ((𝟙 (tensor_unit C)) ⊗ f = (𝟙 (tensor_unit C)) ⊗ g) ↔ (f = g) :=
+sorry
+
+@[simp,search] lemma tensor_right_equiv
+    {X Y : C} (f g : X ⟶ Y) :
+    (f ⊗ (𝟙 (tensor_unit C)) = g ⊗ (𝟙 (tensor_unit C))) ↔ (f = g) :=
+sorry
+
+-- proof following the nLab:
+@[search] lemma left_unitor_product_aux_perimeter (X Y : C) :
+    ((associator (tensor_unit C) (tensor_unit C) X).hom ⊗ (𝟙 Y)) ≫
+    (associator (tensor_unit C) ((tensor_unit C) ⊗ X) Y).hom ≫
+    ((𝟙 (tensor_unit C)) ⊗ (associator (tensor_unit C) X Y).hom) ≫
+    ((𝟙 (tensor_unit C)) ⊗ (left_unitor (X ⊗ Y)).hom)
+  = (((right_unitor (tensor_unit C)).hom ⊗ (𝟙 X)) ⊗ (𝟙 Y)) ≫
+    (associator (tensor_unit C) X Y).hom := by obviously
+
+@[search] lemma left_unitor_product_aux_triangle (X Y : C) :
+    ((associator (tensor_unit C) (tensor_unit C) X).hom ⊗ (𝟙 Y)) ≫
+    (((𝟙 (tensor_unit C)) ⊗ (left_unitor X).hom) ⊗ (𝟙 Y))
+  = ((right_unitor (tensor_unit C)).hom ⊗ (𝟙 X)) ⊗ (𝟙 Y) := by obviously
+
+@[search] lemma left_unitor_product_aux_square (X Y : C) :
+    (associator (tensor_unit C) ((tensor_unit C) ⊗ X) Y).hom ≫
+    ((𝟙 (tensor_unit C)) ⊗ (left_unitor X).hom ⊗ (𝟙 Y))
+  = (((𝟙 (tensor_unit C)) ⊗ (left_unitor X).hom) ⊗ (𝟙 Y)) ≫
+    (associator (tensor_unit C) X Y).hom := by obviously
+
+@[search] lemma left_unitor_product_aux (X Y : C) :
+    ((𝟙 (tensor_unit C)) ⊗ (associator (tensor_unit C) X Y).hom) ≫
+    ((𝟙 (tensor_unit C)) ⊗ (left_unitor (X ⊗ Y)).hom)
+  = (𝟙 (tensor_unit C)) ⊗ ((left_unitor X).hom ⊗ (𝟙 Y)) :=
+begin
+  rw <-(cancel_epi (associator (tensor_unit C) ((tensor_unit C) ⊗ X) Y).hom),
+  rw left_unitor_product_aux_square,
+  rw <-(cancel_epi ((associator (tensor_unit C) (tensor_unit C) X).hom ⊗ (𝟙 Y))),
+  conv {
+    to_rhs,
+    slice 1 2,
+    rw left_unitor_product_aux_triangle,
+  },
+  obviously
+end
+
+@[search] lemma right_unitor_product_aux_perimeter (X Y : C) :
+    ((associator X Y (tensor_unit C)).hom ⊗ (𝟙 (tensor_unit C))) ≫
+    (associator X (Y ⊗ (tensor_unit C)) (tensor_unit C)).hom ≫
+    ((𝟙 X) ⊗ (associator Y (tensor_unit C) (tensor_unit C)).hom) ≫
+    ((𝟙 X) ⊗ (𝟙 Y) ⊗ (left_unitor (tensor_unit C)).hom)
+  = ((right_unitor (X ⊗ Y)).hom ⊗ (𝟙 (tensor_unit C))) ≫
+    (associator X Y (tensor_unit C)).hom := by obviously
+
+@[search] lemma right_unitor_product_aux_triangle (X Y : C) :
+    ((𝟙 X) ⊗ (associator Y (tensor_unit C) (tensor_unit C)).hom) ≫
+    ((𝟙 X) ⊗ (𝟙 Y) ⊗ (left_unitor (tensor_unit C)).hom)
+  = (𝟙 X) ⊗ (right_unitor Y).hom ⊗ (𝟙 (tensor_unit C)) := by obviously
+
+@[search] lemma right_unitor_product_aux_square (X Y : C) :
+    (associator X (Y ⊗ (tensor_unit C)) (tensor_unit C)).hom ≫
+    ((𝟙 X) ⊗ (right_unitor Y).hom ⊗ (𝟙 (tensor_unit C)))
+  = (((𝟙 X) ⊗ (right_unitor Y).hom) ⊗ (𝟙 (tensor_unit C))) ≫
+    (associator X Y (tensor_unit C)).hom := by obviously
+
+@[search] lemma right_unitor_product_aux (X Y : C) :
+    ((associator X Y (tensor_unit C)).hom ⊗ (𝟙 (tensor_unit C))) ≫
+    (((𝟙 X) ⊗ (right_unitor Y).hom) ⊗ (𝟙 (tensor_unit C)))
+  = ((right_unitor (X ⊗ Y)).hom ⊗ (𝟙 (tensor_unit C))) :=
+begin
+  rw <-(cancel_mono (associator X Y (tensor_unit C)).hom),
+  conv {
+    to_lhs,
+    slice 2 3,
+    rw <-right_unitor_product_aux_square,
+  },
+  obviously
+end
+
+@[search] lemma left_unitor_product (X Y : C) :
+  ((associator (tensor_unit C) X Y).hom) ≫
+    ((left_unitor (X ⊗ Y)).hom)
+  = ((left_unitor X).hom ⊗ (𝟙 Y)) :=
+begin
+  rw <-tensor_left_equiv,
+  rw <-interchange_right_identity,
+  apply left_unitor_product_aux
+end
+
+@[search] lemma right_unitor_product (X Y : C) :
+    ((associator X Y (tensor_unit C)).hom) ≫
+    ((𝟙 X) ⊗ (right_unitor Y).hom)
+  = ((right_unitor (X ⊗ Y)).hom) :=
+begin
+  rw <-tensor_right_equiv,
+  rw <-interchange_left_identity,
+  apply right_unitor_product_aux
+end
 
 end
 
