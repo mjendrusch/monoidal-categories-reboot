@@ -30,62 +30,35 @@ class left_duality {C : Type u} (A A' : C) [monoidal_category.{u v} C] :=
 class duality {C : Type u} (A A' : C) [braided_monoidal_category.{u v} C]
   extends right_duality.{u v} A A', left_duality.{u v} A A'
 
-class self_duality {C : Type u} (A : C) [braided_monoidal_category.{u v} C]
-  extends duality A A
+def self_duality {C : Type u} (A : C) [braided_monoidal_category.{u v} C] :=
+duality A A
 
-class is_right_rigid (C : Type u) [monoidal_category.{u v} C] :=
-(right_rigid' : Π X : C, Σ X' : C, right_duality X X')
+class right_rigid (C : Type u) [monoidal_category.{u v} C] :=
+(right_rigidity' : Π X : C, Σ X' : C, right_duality X X')
 
-class is_left_rigid (C : Type u) [monoidal_category.{u v} C] :=
-(left_rigid' : Π X : C, Σ X' : C, left_duality X X')
+class left_rigid (C : Type u) [monoidal_category.{u v} C] :=
+(left_rigidity' : Π X : C, Σ X' : C, left_duality X X')
 
-class is_rigid (C : Type u) [monoidal_category.{u v} C]
-  extends is_right_rigid.{u v} C, is_left_rigid.{u v} C
+class rigid (C : Type u) [monoidal_category.{u v} C]
+  extends right_rigid.{u v} C, left_rigid.{u v} C
 
-class is_self_dual (C : Type u) [braided_monoidal_category.{u v} C] :=
-(self_dual' : Π X : C, self_duality X)
+class self_dual (C : Type u) [braided_monoidal_category.{u v} C] :=
+(self_duality' : Π X : C, self_duality X)
 
-class right_rigid_monoidal_category (C : Type u)
-  extends monoidal_category.{u v} C, is_right_rigid.{u v} C
-
-class left_rigid_monoidal_category (C : Type u)
-  extends monoidal_category.{u v} C, is_left_rigid.{u v} C
-
-class rigid_monoidal_category (C : Type u)
-  extends monoidal_category.{u v} C, is_rigid.{u v} C
-
-class compact_closed_category (C : Type u)
-  extends symmetric_monoidal_category.{u v} C, is_rigid.{u v} C
-
-class self_dual_category (C : Type u)
-  extends symmetric_monoidal_category.{u v} C, is_self_dual.{u v} C
+def compact_closed (C : Type u) [symmetric_monoidal_category.{u v} C] :=
+rigid.{u v} C
 
 section
-open is_self_dual
-open self_duality
+open self_dual
 open left_duality
 
 instance rigid_of_self_dual
     (C : Type u)
     [braided_monoidal_category.{u v} C]
-    [𝒟 : is_self_dual.{u v} C] : is_rigid.{u v} C :=
-{
-  left_rigid'  := λ X : C, sigma.mk X (self_dual' X).to_duality.to_left_duality,
-  right_rigid' := λ X : C, sigma.mk X (self_dual' X).to_duality.to_right_duality
-}
+    [𝒟 : self_dual.{u v} C] : rigid.{u v} C :=
+{ left_rigidity'  := λ X : C, sigma.mk X (self_duality' X).to_left_duality,
+  right_rigidity' := λ X : C, sigma.mk X (self_duality' X).to_right_duality }
 
 end
-
-instance compact_closed_category_of_symmetric_monoidal_category_and_is_rigid
-    (C : Type u)
-    [symmetric_monoidal_category.{u v} C]
-    [is_rigid.{u v} C] : compact_closed_category.{u v} C :=
-{}
-
-instance self_dual_category_of_symmetric_monoidal_category_and_is_rigid
-    (C : Type u)
-    [symmetric_monoidal_category.{u v} C]
-    [is_self_dual.{u v} C] : self_dual_category.{u v} C :=
-{}
 
 end category_theory.monoidal
