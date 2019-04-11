@@ -6,7 +6,7 @@ import category_theory.products
 import category_theory.natural_isomorphism
 open category_theory
 
-universes u v
+universes v u
 
 
 open category_theory.category

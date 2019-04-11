@@ -12,7 +12,7 @@ open category_theory
 open category_theory.slice
 open tactic
 
-universes u v
+universes v u
 
 open category_theory.category
 open category_theory.functor
@@ -66,11 +66,11 @@ attribute [search] monoidal_category.triangle
 section
 open monoidal_category
 
-def one {C : Sort u} [monoidal_category.{u v} C] (X : C) : X ≅ X :=
+def one {C : Sort u} [monoidal_category.{v} C] (X : C) : X ≅ X :=
 { hom := 𝟙 X,
   inv := 𝟙 X }
 
-def tensor_iso {C : Sort u} {X Y X' Y' : C} [monoidal_category.{u v} C] (f : X ≅ Y) (g : X' ≅ Y') :
+def tensor_iso {C : Sort u} {X Y X' Y' : C} [monoidal_category.{v} C] (f : X ≅ Y) (g : X' ≅ Y') :
     tensor_obj X X' ≅ tensor_obj Y Y' :=
 { hom := tensor_hom f.hom g.hom,
   inv := tensor_hom f.inv g.inv}
@@ -78,7 +78,7 @@ end
 
 section
 
-variables (C : Type u) [𝒞 : monoidal_category.{(u + 1) (v + 1)} C]
+variables (C : Sort u) [𝒞 : monoidal_category.{v} C]
 include 𝒞
 
 instance : category C := 𝒞.to_category
