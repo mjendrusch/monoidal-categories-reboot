@@ -18,7 +18,7 @@ namespace category_theory.limits
 
 attribute [search] prod.lift_fst prod.lift_snd prod.map_fst prod.map_snd
 
-variables {C : Type u} [𝒞 : category.{u v} C]
+variables {C : Type u} [𝒞 : category.{v} C]
           [has_binary_products.{u v} C] [has_terminal.{u v} C]
 include 𝒞
 
@@ -57,7 +57,7 @@ open category_theory.limits
 
 namespace category_theory.monoidal
 
-variables (C : Type u) [𝒞 : category.{u v} C] [has_products.{u v} C]
+variables (C : Type u) [𝒞 : category.{v} C] [has_products.{u v} C]
 include 𝒞
 
 instance : has_binary_products.{u v} C := has_binary_products_of_has_products
@@ -65,7 +65,7 @@ instance : has_terminal.{u v} C := has_terminal_of_has_products C
 
 -- TODO extract the rewrite proofs obviously produces below.
 
-def monoidal_of_has_products : monoidal_category.{u v} C :=
+def monoidal_of_has_products : monoidal_category.{v} C :=
 { tensor_obj := λ X Y, limits.prod X Y,
   tensor_hom := λ _ _ _ _ f g, limits.prod.map f g,
   tensor_unit := terminal C,
@@ -82,7 +82,7 @@ def monoidal_of_has_products : monoidal_category.{u v} C :=
   triangle' := sorry, -- works `by obviously`
 }
 
-def braided_monoidal_of_has_products : braided_monoidal_category.{u v} C :=
+def braided_monoidal_of_has_products : braided_monoidal_category.{v} C :=
 { braiding := binary_product.braiding,
   braiding_naturality' := sorry, -- works `by obviously`
   hexagon_forward' := sorry, -- works `by obviously`, but slow,
@@ -90,7 +90,7 @@ def braided_monoidal_of_has_products : braided_monoidal_category.{u v} C :=
   .. monoidal_of_has_products C
 }
 
-def symmetric_monoidal_of_has_products : symmetric_monoidal_category.{u v} C :=
+def symmetric_monoidal_of_has_products : symmetric_monoidal_category.{v} C :=
 { symmetry' := binary_product.symmetry,
   .. braided_monoidal_of_has_products C }
 

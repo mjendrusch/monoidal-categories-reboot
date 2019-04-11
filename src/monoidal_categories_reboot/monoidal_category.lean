@@ -21,7 +21,7 @@ open category_theory.functor.category.nat_trans
 open category_theory.nat_iso
 
 namespace category_theory.monoidal
-class monoidal_category (C : Type u) extends category.{u v} C :=
+class monoidal_category (C : Sort u) extends category.{v} C :=
 -- curried tensor product of objects:
 (tensor_obj               : C → C → C)
 -- curried tensor product of morphisms:
@@ -61,23 +61,27 @@ attribute [search] monoidal_category.pentagon
 restate_axiom monoidal_category.triangle'
 attribute [search] monoidal_category.triangle
 
+@[obviously] meta def obviously'' := tactic.tidy {tactics := tidy.default_tactics ++ [rewrite_search {}]}
+
 section
 open monoidal_category
 
-def one {C : Type u} [monoidal_category.{u v} C] (X : C) : X ≅ X :=
+def one {C : Sort u} [monoidal_category.{u v} C] (X : C) : X ≅ X :=
 { hom := 𝟙 X,
   inv := 𝟙 X }
 
-def tensor_iso {C : Type u} {X Y X' Y' : C} [monoidal_category.{u v} C] (f : X ≅ Y) (g : X' ≅ Y') :
+def tensor_iso {C : Sort u} {X Y X' Y' : C} [monoidal_category.{u v} C] (f : X ≅ Y) (g : X' ≅ Y') :
     tensor_obj X X' ≅ tensor_obj Y Y' :=
 { hom := tensor_hom f.hom g.hom,
-  inv := tensor_hom f.inv g.inv }
+  inv := tensor_hom f.inv g.inv}
 end
 
 section
 
-variables (C : Type u) [𝒞 : monoidal_category.{u v} C]
+variables (C : Type u) [𝒞 : monoidal_category.{(u + 1) (v + 1)} C]
 include 𝒞
+
+instance : category C := 𝒞.to_category
 
 open monoidal_category
 
@@ -141,17 +145,17 @@ open monoidal_category
 @[reducible] def monoidal_category.associator_nat_iso :
   left_assoc_functor C ≅ right_assoc_functor C :=
 nat_iso.of_components
-  (by intros; simp; apply associator)
+  (by intros; simp; apply category_theory.monoidal.monoidal_category.associator)
   (by intros; simp; apply associator_naturality)
 @[reducible] def monoidal_category.left_unitor_nat_iso :
   left_unitor_functor C ≅ functor.id C :=
 nat_iso.of_components
-  (by intros; simp; apply left_unitor)
+  (by intros; simp; apply category_theory.monoidal.monoidal_category.left_unitor)
   (by intros; simp; apply left_unitor_naturality)
 @[reducible] def monoidal_category.right_unitor_nat_iso :
   right_unitor_functor C ≅ functor.id C :=
 nat_iso.of_components
-  (by intros; simp; apply right_unitor)
+  (by intros; simp; apply category_theory.monoidal.monoidal_category.right_unitor)
   (by intros; simp; apply right_unitor_naturality)
 
 instance tensor_iso_of_iso

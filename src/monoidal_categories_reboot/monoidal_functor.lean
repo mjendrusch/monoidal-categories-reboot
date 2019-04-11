@@ -6,7 +6,7 @@ import category_theory.products
 import category_theory.natural_isomorphism
 import .tensor_product
 import .monoidal_category
-import tidy.rewrite_search
+import tactic.rewrite_search
 import tactic.interactive
 import .slice_tactic
 
@@ -31,8 +31,8 @@ section
 open monoidal_category
 
 structure monoidal_functor
-  (C : Type u₁) [𝒞 : monoidal_category.{u₁ v₁} C]
-  (D : Type u₂) [𝒟 : monoidal_category.{u₂ v₂} D]
+  (C : Sort u₁) [𝒞 : monoidal_category.{u₁ v₁} C]
+  (D : Sort u₂) [𝒟 : monoidal_category.{u₂ v₂} D]
 extends category_theory.functor C D :=
 -- unit morphism
 (ε               : tensor_unit D ≅ obj (tensor_unit C))
@@ -69,14 +69,14 @@ attribute [simp,search] monoidal_functor.associativity
 end
 
 namespace monoidal_functor
-variables {C : Type u₁} [𝒞 : monoidal_category.{u₁ v₁} C]
-variables {D : Type u₂} [𝒟 : monoidal_category.{u₂ v₂} D]
+variables {C : Sort u₁} [𝒞 : monoidal_category.{u₁ v₁} C]
+variables {D : Sort u₂} [𝒟 : monoidal_category.{u₂ v₂} D]
 include 𝒞 𝒟
 
 -- This is unfortunate; we need all sorts of struts to give
 -- monoidal functors the features of functors...
 @[reducible] def on_iso (F : monoidal_functor C D) {X Y : C} (f : X ≅ Y) : F.obj X ≅ F.obj Y :=
-F.to_functor.on_iso f
+F.to_functor.map_iso f
 
 @[search] lemma map_id (F : monoidal_functor C D) (X : C) :
   F.map (𝟙 X) = 𝟙 (F.obj X) := F.map_id' X
@@ -88,13 +88,13 @@ end monoidal_functor
 
 section
 
-variables (C : Type u₁) [𝒞 : monoidal_category.{u₁ v₁} C]
-variables (D : Type u₂) [𝒟 : monoidal_category.{u₂ v₂} D]
-variables (E : Type u₃) [ℰ : monoidal_category.{u₃ v₃} E]
+variables (C : Sort u₁) [𝒞 : monoidal_category.{u₁ v₁} C]
+variables (D : Sort u₂) [𝒟 : monoidal_category.{u₂ v₂} D]
+variables (E : Sort u₃) [ℰ : monoidal_category.{u₃ v₃} E]
 
 include 𝒞 𝒟 ℰ
 
-open tidy.rewrite_search.tracer
+open tactic.rewrite_search.tracer
 -- set_option profiler true
 
 def monoidal_functor.comp

@@ -16,7 +16,7 @@ open category_theory.nat_iso
 
 namespace category_theory.monoidal
 
-class braided_monoidal_category (C : Type u) extends monoidal_category.{u v} C :=
+class braided_monoidal_category (C : Sort u) extends monoidal_category.{u v} C :=
 -- braiding natural iso:
 (braiding             : Π X Y : C, X ⊗ Y ≅ Y ⊗ X)
 (braiding_naturality' : ∀ {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
@@ -41,7 +41,7 @@ attribute [simp,search] braided_monoidal_category.hexagon_reverse
 
 section
 
-variables (C : Type u) [𝒞 : braided_monoidal_category.{u v} C]
+variables (C : Sort u) [𝒞 : braided_monoidal_category.{u v} C]
 include 𝒞
 
 @[reducible] def braided_monoidal_category.braiding_functor : (C × C) ⥤ C :=
@@ -68,7 +68,7 @@ nat_iso.of_components
 
 end
 
-class symmetric_monoidal_category (C : Type u) extends braided_monoidal_category C :=
+class symmetric_monoidal_category (C : Sort u) extends braided_monoidal_category C :=
 -- braiding symmetric:
 (symmetry' : ∀ X Y : C, (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 (X ⊗ Y) . obviously)
 

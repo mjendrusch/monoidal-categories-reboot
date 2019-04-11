@@ -11,18 +11,18 @@ open category_theory.monoidal.monoidal_category
 open category_theory.monoidal.braided_monoidal_category
 
 @[reducible]
-def reassociate_and_braid_product {C : Type u} (X Y : C) [symmetric_monoidal_category.{u v} C] :=
+def reassociate_and_braid_product {C : Type u} (X Y : C) [symmetric_monoidal_category.{v} C] :=
 (associator X Y (X ⊗ Y)).hom ≫ ((𝟙 X) ⊗ (associator Y X Y).inv) ≫
 ((𝟙 X) ⊗ (braiding Y X).hom ⊗ (𝟙 Y)) ≫ (associator X (X ⊗ Y) Y).inv ≫
 ((associator X X Y).inv ⊗ (𝟙 Y)) ≫ (associator (X ⊗ X) Y Y).hom
 
 @[reducible]
-def reassociate_and_braid_coproduct {C : Type u} (X Y : C) [symmetric_monoidal_category.{u v} C] :=
+def reassociate_and_braid_coproduct {C : Type u} (X Y : C) [symmetric_monoidal_category.{v} C] :=
 (associator X X (Y ⊗ Y)).hom ≫ ((𝟙 X) ⊗ (associator X Y Y).inv) ≫
 ((𝟙 X) ⊗ (braiding X Y).hom ⊗ (𝟙 Y)) ≫
 ((𝟙 X) ⊗ (associator Y X Y).hom) ≫ (associator X Y (X ⊗ Y)).inv
 
-class hypergraph_category (C : Type u) extends symmetric_monoidal_category.{u v} C :=
+class hypergraph_category (C : Type u) extends symmetric_monoidal_category.{v} C :=
 -- each object is equipped with the structure of a special commutative Frobenius monoid:
 (frobenius_structure : Π X : C, special_commutative_frobenius_object X)
 -- the Frobenius structure and the tensor product interact in the obvious way:

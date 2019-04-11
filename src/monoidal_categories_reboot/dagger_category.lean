@@ -16,7 +16,7 @@ open category_theory
 open category_theory.monoidal
 
 class dagger_structure
-    (C : Type u) [𝒞 : category.{u v} C] :=
+    (C : Sort u) [𝒞 : category.{v} C] :=
 (dagger_hom : Π {X Y : C} (f : X ⟶ Y), Y ⟶ X)
 (dagger_comp'       : ∀ {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z), dagger_hom (f ≫ g) = (dagger_hom g) ≫ (dagger_hom f)
                     . obviously)
@@ -33,19 +33,19 @@ attribute [simp,search] dagger_structure.dagger_involution'
 postfix ` † `:10000 := dagger_structure.dagger_hom
 
 def dagger_structure.dagger
-    {C : Type u} [𝒞 : category.{u v} C] [dagger_structure C] : Cᵒᵖ ⥤ C :=
-{ map := λ {X Y} (f), f†,
-  obj := λ X, X }
+    {C : Sort u} [𝒞 : category.{v} C] [dagger_structure C] : Cᵒᵖ ⥤ C :=
+{ map := λ {X Y} (f), (has_hom.hom.unop f)†,
+  obj := λ X, unop X }
 
 def is_unitary
-    {C : Type u} [category.{u v} C] [dagger_structure C]
+    {C : Sort u} [category.{v} C] [dagger_structure C]
     {X Y : C} (f : X ≅ Y) : Prop :=
 f.inv = f.hom†
 
 open category_theory.monoidal.monoidal_category
 open category_theory.monoidal.braided_monoidal_category
 class monoidal_dagger_structure
-    (C : Type u) [symmetric_monoidal_category.{u v} C]
+    (C : Sort u) [symmetric_monoidal_category.{v u} C]
     extends dagger_structure.{u v} C :=
 (dagger_tensor'        : ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'), (f ⊗ g)† = f† ⊗ g†
                        . obviously)
