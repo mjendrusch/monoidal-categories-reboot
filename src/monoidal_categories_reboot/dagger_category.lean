@@ -9,7 +9,7 @@ import .slice_tactic
 import .braided_monoidal_category
 import .rigid_monoidal_category
 
-universes u v
+universes v u
 
 namespace category_theory.dagger
 open category_theory
@@ -45,8 +45,8 @@ f.inv = f.hom†
 open category_theory.monoidal.monoidal_category
 open category_theory.monoidal.braided_monoidal_category
 class monoidal_dagger_structure
-    (C : Sort u) [symmetric_monoidal_category.{v u} C]
-    extends dagger_structure.{u v} C :=
+    (C : Sort u) [symmetric_monoidal_category.{v} C]
+    extends dagger_structure.{v} C :=
 (dagger_tensor'        : ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'), (f ⊗ g)† = f† ⊗ g†
                        . obviously)
 (associator_unitary'   : ∀ X Y Z : C, is_unitary (associator X Y Z) . obviously)

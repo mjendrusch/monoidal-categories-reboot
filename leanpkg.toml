@@ -7,4 +7,4 @@ path = "src"
 [dependencies]
 lean-rewrite-search = {git = "https://github.com/khoek/lean-rewrite-search", rev = "402b6eae441861aad908e46a1adebc26c23387ad"}
 lean-category-theory = {git = "https://github.com/semorrison/lean-category-theory", rev = "0f029a2364975f56ac727d31d867a18c95c22fd8"}
-mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "c1e07a2e46c954aba47335880b7bb9459dffc4aa"}
+mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "fbce6e4d46fb22ff4145c0e854d3966ef69a983d"}

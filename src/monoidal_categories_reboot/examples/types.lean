@@ -29,7 +29,7 @@ def types_braiding (α β : Type u) : α × β → β × α :=
 λ X, ⟨X.2, X.1⟩
 def types_braiding_inv := types_braiding
 
-instance types : symmetric_monoidal_category.{(u+1) u} (Type u) :=
+instance types : symmetric_monoidal_category.{(u+1)} (Type u) :=
 { tensor_obj := λ X Y, X × Y,
   tensor_hom := λ _ _ _ _ f g, prod.map f g,
   tensor_unit := punit,

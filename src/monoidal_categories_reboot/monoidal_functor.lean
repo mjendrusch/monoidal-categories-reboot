@@ -8,15 +8,13 @@ import .tensor_product
 import .monoidal_category
 import tactic.rewrite_search
 import tactic.interactive
-import .slice_tactic
 
 open category_theory
-open category_theory.slice
 open tactic
 
 universe u
 
-universes u₁ u₂ u₃ v₁ v₂ v₃
+universes v₁ v₂ v₃ u₁ u₂ u₃
 
 open category_theory.category
 open category_theory.functor
@@ -31,8 +29,8 @@ section
 open monoidal_category
 
 structure monoidal_functor
-  (C : Sort u₁) [𝒞 : monoidal_category.{u₁ v₁} C]
-  (D : Sort u₂) [𝒟 : monoidal_category.{u₂ v₂} D]
+  (C : Sort u₁) [𝒞 : monoidal_category.{v₁} C]
+  (D : Sort u₂) [𝒟 : monoidal_category.{v₂} D]
 extends category_theory.functor C D :=
 -- unit morphism
 (ε               : tensor_unit D ≅ obj (tensor_unit C))
@@ -69,8 +67,8 @@ attribute [simp,search] monoidal_functor.associativity
 end
 
 namespace monoidal_functor
-variables {C : Sort u₁} [𝒞 : monoidal_category.{u₁ v₁} C]
-variables {D : Sort u₂} [𝒟 : monoidal_category.{u₂ v₂} D]
+variables {C : Sort u₁} [𝒞 : monoidal_category.{v₁} C]
+variables {D : Sort u₂} [𝒟 : monoidal_category.{v₂} D]
 include 𝒞 𝒟
 
 -- This is unfortunate; we need all sorts of struts to give
@@ -88,9 +86,9 @@ end monoidal_functor
 
 section
 
-variables (C : Sort u₁) [𝒞 : monoidal_category.{u₁ v₁} C]
-variables (D : Sort u₂) [𝒟 : monoidal_category.{u₂ v₂} D]
-variables (E : Sort u₃) [ℰ : monoidal_category.{u₃ v₃} E]
+variables (C : Sort u₁) [𝒞 : monoidal_category.{v₁} C]
+variables (D : Sort u₂) [𝒟 : monoidal_category.{v₂} D]
+variables (E : Sort u₃) [ℰ : monoidal_category.{v₃} E]
 
 include 𝒞 𝒟 ℰ
 

@@ -3,7 +3,7 @@ import .monoidal_category
 import .braided_monoidal_category
 import .monoid_object
 
-universes u v
+universes v u
 
 namespace category_theory.hypergraph
 open category_theory.monoidal
