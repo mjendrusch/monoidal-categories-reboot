@@ -5,14 +5,13 @@ import category_theory.functor
 import category_theory.products
 import category_theory.natural_isomorphism
 import category_theory.tactics.obviously -- Give ourselves access to `rewrite_search`
-import .slice_tactic
 import .tensor_product
+import tactic.slice
 
 open category_theory
-open category_theory.slice
 open tactic
 
-universes u v
+universes v u
 
 open category_theory.category
 open category_theory.functor
@@ -21,7 +20,7 @@ open category_theory.functor.category.nat_trans
 open category_theory.nat_iso
 
 namespace category_theory.monoidal
-class monoidal_category (C : Type u) extends category.{u v} C :=
+class monoidal_category (C : Sort u) extends category.{v} C :=
 -- curried tensor product of objects:
 (tensor_obj               : C → C → C)
 -- curried tensor product of morphisms:
@@ -61,33 +60,34 @@ attribute [search] monoidal_category.pentagon
 restate_axiom monoidal_category.triangle'
 attribute [search] monoidal_category.triangle
 
+@[obviously] meta def obviously'' := tactic.tidy {tactics := tidy.default_tactics ++ [rewrite_search {}]}
+
 section
 open monoidal_category
 
-def one {C : Type u} [monoidal_category.{u v} C] (X : C) : X ≅ X :=
+def one {C : Sort u} [monoidal_category.{v} C] (X : C) : X ≅ X :=
 { hom := 𝟙 X,
   inv := 𝟙 X }
 
-def tensor_iso {C : Type u} {X Y X' Y' : C} [monoidal_category.{u v} C] (f : X ≅ Y) (g : X' ≅ Y') :
+def tensor_iso {C : Sort u} {X Y X' Y' : C} [monoidal_category.{v} C] (f : X ≅ Y) (g : X' ≅ Y') :
     tensor_obj X X' ≅ tensor_obj Y Y' :=
 { hom := tensor_hom f.hom g.hom,
-  inv := tensor_hom f.inv g.inv }
+  inv := tensor_hom f.inv g.inv}
 end
+
+
+open monoidal_category
 
 section
 
-variables (C : Type u) [𝒞 : monoidal_category.{u v} C]
+variables (C : Sort u) [𝒞 : monoidal_category.{v} C]
 include 𝒞
 
-open monoidal_category
+instance : category C := 𝒞.to_category
 
 infixr ` ⊗ `:80 := tensor_obj
 infixr ` ⊗ `:80 := tensor_hom
 infixr ` ⊗ `:80 := tensor_iso
-
-@[reducible] def monoidal_category.tensor : (C × C) ⥤ C :=
-{ obj := λ X, X.1 ⊗ X.2,
-  map := λ {X Y : C × C} (f : X ⟶ Y), f.1 ⊗ f.2 }
 
 variables {U V W X Y Z : C}
 
@@ -116,43 +116,6 @@ begin
   rw ←interchange,
   simp
 end
-
-open monoidal_category
-
-@[reducible] def monoidal_category.left_assoc_functor : (C × C × C) ⥤ C :=
-{ obj := λ X, (X.1 ⊗ X.2.1) ⊗ X.2.2,
-  map := λ {X Y : C × C × C} (f : X ⟶ Y),
-    (f.1 ⊗ f.2.1) ⊗ f.2.2 }
-@[reducible] def monoidal_category.right_assoc_functor : (C × C × C) ⥤ C :=
-{ obj := λ X, X.1 ⊗ (X.2.1 ⊗ X.2.2),
-  map := λ {X Y : C × C × C} (f : X ⟶ Y),
-    f.1 ⊗ (f.2.1 ⊗ f.2.2) }
-@[reducible] def monoidal_category.left_unitor_functor : C ⥤ C :=
-{ obj := λ X, tensor_unit C ⊗ X,
-  map := λ {X Y : C} (f : X ⟶ Y), (𝟙 (tensor_unit C)) ⊗ f }
-@[reducible] def monoidal_category.right_unitor_functor : C ⥤ C :=
-{ obj := λ X, X ⊗ tensor_unit C,
-  map := λ {X Y : C} (f : X ⟶ Y), f ⊗ (𝟙 (tensor_unit C)) }
-
-open monoidal_category
-
--- natural isomorphisms for the associator and unitors.
-
-@[reducible] def monoidal_category.associator_nat_iso :
-  left_assoc_functor C ≅ right_assoc_functor C :=
-nat_iso.of_components
-  (by intros; simp; apply associator)
-  (by intros; simp; apply associator_naturality)
-@[reducible] def monoidal_category.left_unitor_nat_iso :
-  left_unitor_functor C ≅ functor.id C :=
-nat_iso.of_components
-  (by intros; simp; apply left_unitor)
-  (by intros; simp; apply left_unitor_naturality)
-@[reducible] def monoidal_category.right_unitor_nat_iso :
-  right_unitor_functor C ≅ functor.id C :=
-nat_iso.of_components
-  (by intros; simp; apply right_unitor)
-  (by intros; simp; apply right_unitor_naturality)
 
 instance tensor_iso_of_iso
     {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y')
@@ -257,6 +220,55 @@ begin
   rw <-interchange_left_identity,
   apply right_unitor_product_aux
 end
+
+end
+
+section
+
+-- In order to be able to describe the tensor product as a functor, we
+-- need to be up in at least `Type 1` for both objects and morphisms,
+-- so that we can construct products.
+variables (C : Type u) [𝒞 : monoidal_category.{v+1} C]
+include 𝒞
+
+@[reducible] def monoidal_category.tensor : (C × C) ⥤ C :=
+{ obj := λ X, tensor_obj X.1 X.2,
+  map := λ {X Y : C × C} (f : X ⟶ Y), tensor_hom f.1 f.2 }
+
+@[reducible] def monoidal_category.left_assoc_functor : (C × C × C) ⥤ C :=
+{ obj := λ X, (X.1 ⊗ X.2.1) ⊗ X.2.2,
+  map := λ {X Y : C × C × C} (f : X ⟶ Y),
+    (f.1 ⊗ f.2.1) ⊗ f.2.2 }
+@[reducible] def monoidal_category.right_assoc_functor : (C × C × C) ⥤ C :=
+{ obj := λ X, X.1 ⊗ (X.2.1 ⊗ X.2.2),
+  map := λ {X Y : C × C × C} (f : X ⟶ Y),
+    f.1 ⊗ (f.2.1 ⊗ f.2.2) }
+@[reducible] def monoidal_category.left_unitor_functor : C ⥤ C :=
+{ obj := λ X, tensor_unit C ⊗ X,
+  map := λ {X Y : C} (f : X ⟶ Y), (𝟙 (tensor_unit C)) ⊗ f }
+@[reducible] def monoidal_category.right_unitor_functor : C ⥤ C :=
+{ obj := λ X, X ⊗ tensor_unit C,
+  map := λ {X Y : C} (f : X ⟶ Y), f ⊗ (𝟙 (tensor_unit C)) }
+
+open monoidal_category
+
+-- natural isomorphisms for the associator and unitors.
+
+@[reducible] def monoidal_category.associator_nat_iso :
+  left_assoc_functor C ≅ right_assoc_functor C :=
+nat_iso.of_components
+  (by intros; simp; apply category_theory.monoidal.monoidal_category.associator)
+  (by intros; simp; apply associator_naturality)
+@[reducible] def monoidal_category.left_unitor_nat_iso :
+  left_unitor_functor C ≅ functor.id C :=
+nat_iso.of_components
+  (by intros; simp; apply category_theory.monoidal.monoidal_category.left_unitor)
+  (by intros; simp; apply left_unitor_naturality)
+@[reducible] def monoidal_category.right_unitor_nat_iso :
+  right_unitor_functor C ≅ functor.id C :=
+nat_iso.of_components
+  (by intros; simp; apply category_theory.monoidal.monoidal_category.right_unitor)
+  (by intros; simp; apply right_unitor_naturality)
 
 end
 

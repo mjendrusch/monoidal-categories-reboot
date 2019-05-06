@@ -1,10 +1,10 @@
 [package]
 name = "monoidal-categories-reboot"
 version = "0.1"
-lean_version = "nightly-2018-10-28"
+lean_version = "3.4.2"
 path = "src"
 
 [dependencies]
-lean-tidy = {git = "https://github.com/semorrison/lean-tidy", rev = "3a69d6241207f0c0758468dce666858027c54909"}
-lean-category-theory = {git = "https://github.com/semorrison/lean-category-theory", rev = "2d7ccdc8fc164f5e93eb5a440e9ebdd9276f76c5"}
-mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "47b3477e20ffb5a06588dd3abb01fe0fe3205646"}
+lean-rewrite-search = {git = "https://github.com/khoek/lean-rewrite-search", rev = "402b6eae441861aad908e46a1adebc26c23387ad"}
+lean-category-theory = {git = "https://github.com/semorrison/lean-category-theory", rev = "0f029a2364975f56ac727d31d867a18c95c22fd8"}
+mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "fbce6e4d46fb22ff4145c0e854d3966ef69a983d"}

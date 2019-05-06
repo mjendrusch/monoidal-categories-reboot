@@ -6,7 +6,7 @@ import .monoidal_category
 open category_theory
 open tactic
 
-universes u v
+universes v u
 
 open category_theory.category
 open category_theory.functor
@@ -16,7 +16,7 @@ open category_theory.nat_iso
 
 namespace category_theory.monoidal
 
-class braided_monoidal_category (C : Type u) extends monoidal_category.{u v} C :=
+class braided_monoidal_category (C : Sort u) extends monoidal_category.{v} C :=
 -- braiding natural iso:
 (braiding             : Π X Y : C, X ⊗ Y ≅ Y ⊗ X)
 (braiding_naturality' : ∀ {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
@@ -41,9 +41,10 @@ attribute [simp,search] braided_monoidal_category.hexagon_reverse
 
 section
 
-variables (C : Type u) [𝒞 : braided_monoidal_category.{u v} C]
+variables (C : Type u) [𝒞 : braided_monoidal_category.{v+1} C]
 include 𝒞
 
+-- TODO not good names, should just take about `tensor_functor` and `swap ⋙ tensor_functor`.
 @[reducible] def braided_monoidal_category.braiding_functor : (C × C) ⥤ C :=
 { obj := λ X, X.2 ⊗ X.1,
   map := λ {X Y : C × C} (f : X ⟶ Y), f.2 ⊗ f.1 }
@@ -68,7 +69,7 @@ nat_iso.of_components
 
 end
 
-class symmetric_monoidal_category (C : Type u) extends braided_monoidal_category C :=
+class symmetric_monoidal_category (C : Sort u) extends braided_monoidal_category.{v} C :=
 -- braiding symmetric:
 (symmetry' : ∀ X Y : C, (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 (X ⊗ Y) . obviously)
 
